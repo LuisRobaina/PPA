@@ -13,6 +13,8 @@ distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdi
 
 def learnFromEncounter(encounter_directory):
 
+    print("LEARNING  FROM ", encounter_directory)
+
     encounter_state = getInitStateFromEncounter(encounter_directory) 
 
     # Sanity check -- are the two aircraft's initial positions well separated
@@ -69,9 +71,11 @@ def learnFromEncounter(encounter_directory):
 
                 state_in_model.update(action, reward)
 
-                # out = f'''
-                # UPDATED: {state_in_model}
-                # '''
+                out = f'''
+                UPDATED: {state_in_model}
+                '''
+                print(out)
+
                 already_in_model = True
                 break
 
@@ -80,6 +84,7 @@ def learnFromEncounter(encounter_directory):
         
         print("NEW. Added to Model")
         Learned_Model.append(stateActionQN)
+
         print("Coverage % = ", (len(Learned_Model) / space_size ) * 100)
 
 
