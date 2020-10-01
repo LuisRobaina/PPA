@@ -60,22 +60,13 @@ def learnFromEncounter(encounter_directory):
         for state_in_model in Learned_Model:
             # Check the model in memory:
             if state_in_model == stateActionQN:
+
                 """
                     This discrete local state already
                     exists in our model: Update our 
                     knowledge about it.
                 """
-                # out = f'''
-                # BEFORE: {state_in_model}
-                # '''
-
                 state_in_model.update(action, reward)
-
-                out = f'''
-                UPDATED: {state_in_model}
-                '''
-                print(out)
-
                 already_in_model = True
                 break
 
@@ -84,7 +75,6 @@ def learnFromEncounter(encounter_directory):
         
         print("NEW. Added to Model")
         Learned_Model.append(stateActionQN)
-
         print("Coverage % = ", (len(Learned_Model) / space_size ) * 100)
 
 

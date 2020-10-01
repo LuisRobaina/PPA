@@ -1,18 +1,16 @@
 from PPA.global_constants import *
 import numpy as np
 from sklearn.preprocessing import KBinsDiscretizer
-import math
-
 
 def setUpdiscretizers():
     
-    range_distance = (np.array([ [x for x in range(MIN_DISTANCE, MAX_DISTANCE)] ])).T
-    range_angle = (np.array([ [x for x in range(MIN_ANGLE, MAX_ANGLE)] ])).T
-    range_speed = (np.array([ [x for x in range(MIN_SPEED, MAX_SPEED)] ])).T
+    range_distance = (np.array([ [x for x in range(MIN_DISTANCE, MAX_DISTANCE +  1)] ])).T
+    range_angle = (np.array([ [x for x in range(MIN_ANGLE, MAX_ANGLE + 1)] ])).T
+    range_speed = (np.array([ [x for x in range(MIN_SPEED, MAX_SPEED + 1)] ])).T
 
-    distance_bins = math.ceil(2*pow(len(range_distance), 2/5))
-    angle_bins = math.ceil(2 * pow(len(range_angle), 2 / 5))
-    speed_bins = math.ceil(2 * pow(len(range_speed), 2 / 5))
+    distance_bins = len(range_distance) - 1
+    angle_bins = len(range_distance) - 1
+    speed_bins = len(range_distance) - 1
 
     distance_discretizer = KBinsDiscretizer(n_bins= distance_bins, encode='ordinal', strategy='uniform')
     angle_discretizer = KBinsDiscretizer(n_bins = angle_bins, encode='ordinal', strategy='uniform')
