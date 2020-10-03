@@ -183,10 +183,8 @@ def runEncounters():
             outcome = constructPath(init_state, ENCOUNTER_PATH)
 
             if outcome == -1: # Failed Path.
-
                 # Start Learning Again...
-                runEncounters()
-
+                learnFromEncounter(ENCOUNTER_PATH)
             if outcome == 0: # Success Path:
                 print("Optimal Trajectory Found ", ENCOUNTER_NAME)
                 found_traj = True

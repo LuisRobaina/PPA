@@ -56,9 +56,11 @@ class MCST:
             c = math.sqrt(2)
             
             # Explore or exploit...    
-            UCB1_left = (mcst_node.turn_left.Q)/(mcst_node.turn_left.N) + (math.log(mcst_node.N)/mcst_node.turn_left.N)    
-            UCB1_right = (mcst_node.turn_right.Q)/(mcst_node.turn_right.N) + (math.log(mcst_node.N)/mcst_node.turn_right.N)
-            UCB1_no_turn = (mcst_node.no_turn.Q)/(mcst_node.no_turn.N) + (math.log(mcst_node.N)/mcst_node.no_turn.N)
+            UCB1_left = (mcst_node.turn_left.Q)/(mcst_node.turn_left.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_left.N))
+
+            UCB1_right = (mcst_node.turn_right.Q)/(mcst_node.turn_right.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_right.N))
+
+            UCB1_no_turn = (mcst_node.no_turn.Q)/(mcst_node.no_turn.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.no_turn.N))
             
             values = [UCB1_no_turn, UCB1_left, UCB1_right]
             
