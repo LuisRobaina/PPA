@@ -53,14 +53,15 @@ class MCST:
         # While a given state node has been expanded, select a child using UCB1.
         while mcst_node.visited_child_count == 3: # LEFT, NO_TURN, RIGHT child states have been visited.
                         
-            c = math.sqrt(2)
-            
+            # c = math.sqrt(2)
+            c = 4
+
             # Explore or exploit...    
             UCB1_left = (mcst_node.turn_left.Q)/(mcst_node.turn_left.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_left.N))
 
             UCB1_right = (mcst_node.turn_right.Q)/(mcst_node.turn_right.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_right.N))
 
-            UCB1_no_turn = (mcst_node.no_turn.Q)/(mcst_node.no_turn.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.no_turn.N))
+            UCB1_no_turn = (mcst_node.no_turn.Q)/(mcst_node.no_turn.N) + c * math.sqrt ((math.log(mcst_node.N)/mcst_node.no_turn.N))
             
             values = [UCB1_no_turn, UCB1_left, UCB1_right]
             
@@ -69,15 +70,15 @@ class MCST:
             if nextChildIndex is 0:
                 mcst_node = mcst_node.no_turn
                 # Keep track of the state actions pair along the path to a final state.
-                self.visitedStatesPath.append( (mcst_node, 'NO_TURN') )
+                self.visitedStatesPath.append( (mcst_node, 'NO_TURN'))
             elif nextChildIndex is 1:
                 mcst_node = mcst_node.turn_left
                 # Keep track of the state actions pair along the path to a final state.
-                self.visitedStatesPath.append( (mcst_node, 'LEFT') )
+                self.visitedStatesPath.append( (mcst_node, 'LEFT'))
             else:
                 # Keep track of the state actions pair along the path to a final state.
                 mcst_node = mcst_node.turn_right
-                self.visitedStatesPath.append( (mcst_node, 'RIGHT') )
+                self.visitedStatesPath.append( (mcst_node, 'RIGHT'))
                                               
         return mcst_node
     
