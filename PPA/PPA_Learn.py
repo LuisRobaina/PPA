@@ -108,7 +108,7 @@ def constructPath(initial_state: State, encounter_path):
         # Generate model object.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
         print("Looking for: ", model_lookup)
-        print("HAVE:")
+        print("HAVE:", len(Learned_Model))
         for state_in_model in Learned_Model:
             if state_in_model == model_lookup:  # Same discrete local state.
                 model_has_state = True
