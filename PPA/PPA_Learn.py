@@ -46,11 +46,12 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
         this encounter and convert the states to local coordinates to generate 
         (local_state,action,reward) tuples.
     """
+    mcts.state_action_reward = []
     mcts.getStateActionRewards(mcts.root)
 
     print("LEARNED ABOUT ", len(mcts.state_action_reward))
 
-    # The set of state,action,rewards that it learnt from this encounter.
+    # The set of state,action,rewards that it learnt from this encounter iteration.
     for state, action, reward in mcts.state_action_reward:
 
         already_in_model = False
