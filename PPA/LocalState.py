@@ -1,7 +1,4 @@
-from PPA.global_constants import *
-import math
-import numpy as np
-from numpy import linalg as LA
+from PPA.State import *
 
 
 class LocalState:
@@ -51,8 +48,8 @@ def convertAbsToLocal(absolute_encounter):
     
     # Distance to the destination (ownship)
     destination = np.array(DESTINATION_STATE)
-    dest_ownship_vector = destination - ownship_pos             # [0,0] - [ownship_x, ownship_y].
-    distance_ownship_destination = LA.norm(dest_ownship_vector) # distance to the destination at [0,0].
+    dest_ownship_vector = destination - ownship_pos                 # [0,0] - [ownship_x, ownship_y].
+    distance_ownship_destination = LA.norm(dest_ownship_vector)     # distance to the destination at [0,0].
     
     theta_destintation_ownship = math.degrees(math.atan2(dest_ownship_vector[1],dest_ownship_vector[1]))
     
@@ -104,7 +101,7 @@ def convertAbsToLocal(absolute_encounter):
     return local_state
 
 
-def isTerminalState(state):
+def isTerminalState(state: State):
 
     """
     Returns a non-zero reward for a final state:

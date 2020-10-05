@@ -1,18 +1,19 @@
-from PPA.Discretizers import *
 from PPA.MCTS import *
 from PPA.StateActionQN import *
-import pandas as pd
 import pickle
-from PPA.global_constants import *
+from PPA.State import *
 
 # Set of StateActionQN that represent the model.
 Learned_Model = []
+
+# Trajectory recommended for a given encounter.
+trajectory_states = []
 
 # Retrieve discretizers:
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
 
-def learnFromEncounter(encounter_directory, mcts):
+def learnFromEncounter(encounter_directory, mcts: MCST):
 
     print("LEARNING  FROM ", encounter_directory)
 
@@ -86,15 +87,17 @@ def learnFromEncounter(encounter_directory, mcts):
 
     return mcts
 
-def constructPath(initial_state: State, encounter_path):
+
+def constructPath(last_traj_state: State, encounter_path, model_index):
+
+    global trajectory_states
 
     print("TRAJ FOR:", encounter_path)
-    trajectory_states = [initial_state]
-    
-    current_state = initial_state
+
+    current_state = last_traj_state
     
     # Is initial state a terminal state?
-    assert(not isTerminalState(initial_state))
+    assert(not isTerminalState(current_state))
 
     while isTerminalState(current_state) == 0:
 
@@ -111,18 +114,25 @@ def constructPath(initial_state: State, encounter_path):
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
         print("Looking for: ", model_lookup)
         print("HAVE:", len(Learned_Model))
-        for state_in_model in Learned_Model:
+
+        # Start checking learned model from last checked state.
+        print("Starting from ", model_index)
+        for state_in_model in Learned_Model[model_index:]:
+
             if state_in_model == model_lookup:  # Same discrete local state.
+
                 model_has_state = True
                 action = state_in_model.getBestAction()
                 print("Took action: ", action)
                 current_state = getNewState(current_state, action)
                 trajectory_states.append(current_state)
+                model_index = 0
                 break
+
         
         if not model_has_state:
             print('STATE_NOT_MODELED')
-            return -1  # Path couldn't be constructed: Missing state in the model.
+            return -1, current_state, len(Learned_Model) -1  # Path couldn't be constructed: Missing state in the model.
 
     """
         What final state did we reach?
@@ -133,22 +143,23 @@ def constructPath(initial_state: State, encounter_path):
         LODWC_REWARD: Lost of well clear (Fails)
         
     """
-
     reward = isTerminalState(current_state)
 
     if reward is DESTINATION_STATE_REWARD:
+
         # Save path to csv file:
-        df = pd.DataFrame.from_dict(current_state.__dict__,orient='index')
-        df.to_csv(encounter_path+"/" + "Traj.csv")
-        return 0  # Success path.
+        traj = np.array([trajectory_states])
+        traj.tofile(encounter_path+"/" + "Traj.csv", sep=',')
+        trajectory_states = []
+        return 0, current_state, 0  # Success path.
 
     else:
         if reward == ABANDON_STATE_REWARD:
             print('ABANDON_STATE')
         elif reward == LODWC_REWARD:
             print('LODWC')
-
-        return -1  # Failed path.
+        trajectory_states = []
+        return -1, current_state, 0  # Failed path.
 
 
 def runEncounters():
@@ -179,17 +190,23 @@ def runEncounters():
             init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
 
             found_traj = False
+            last_traj_state = init_state
+            trajectory_states.append(init_state)
+            last_model_index = 0
+
             while not found_traj:
-
                 # Try to construct path and learn.
-                outcome = constructPath(init_state, ENCOUNTER_PATH)
+                outcome, last_traj_state, last_model_index = constructPath(last_traj_state,
+                                                                           ENCOUNTER_PATH,
+                                                                           last_model_index)
 
-                if outcome == -1: # Failed Path.
+                if outcome == -1:   # Failed Path.
                         # Start Learning Again...
                         learnFromEncounter(ENCOUNTER_PATH, mcts)
-                if outcome == 0: # Success Path:
+                if outcome == 0:    # Success Path:
                     print("Optimal Trajectory Found ", ENCOUNTER_NAME)
                     found_traj = True
+
     # """
     #     Keep simulating until all training encounters are solved:
     # """
