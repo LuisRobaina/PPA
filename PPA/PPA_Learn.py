@@ -11,6 +11,7 @@ Learned_Model = []
 # Retrieve discretizers:
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
+
 def learnFromEncounter(encounter_directory):
 
     print("LEARNING  FROM ", encounter_directory)
@@ -37,14 +38,19 @@ def learnFromEncounter(encounter_directory):
         selected_state = mcts.selection()
         mcts.expansion(selected_state)
         mcts.simulate()
+
     """
         Iterate the (state,action,reward) tuples learned starting from
         this encounter and convert the states to local coordinates to generate 
         (local_state,action,reward) tuples.
     """
+    mcts.getStateActionRewards(mcts.root)
 
-    # The set of state,action,rewards that we learn from this encounter.
+    print("LEARNED ABOUT ", len(mcts.state_action_reward))
+
+    # The set of state,action,rewards that it learnt from this encounter.
     for state, action, reward in mcts.state_action_reward:
+
         already_in_model = False
 
         # Convert to a local state.
@@ -85,7 +91,7 @@ def constructPath(initial_state: State, encounter_path):
     
     current_state = initial_state
     
-    # Is initial state a terminal state:
+    # Is initial state a terminal state?
     assert(not isTerminalState(initial_state))
 
     while isTerminalState(current_state) == 0:
@@ -191,6 +197,9 @@ def runEncounters():
 
 
 if __name__ == "__main__":
+
+    space_size_str = "{:e}".format(space_size)
+    print("STATE SPACE SIZE : ", space_size_str)
 
     runEncounters()
 

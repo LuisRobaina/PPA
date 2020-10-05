@@ -27,13 +27,6 @@ class LocalState:
             intruder speed (v_i) = {self.intruder_vel}
         """
 
-    # def getLocalStateAfterAction(action):
-    #
-    #     self.ownship_pos = (ownship_pos)   # [x,y] (ft)
-    #     self.intruder_pos = (intruder_pos) # [x,y] (ft)
-    #     self.ownship_vel = (ownship_vel)   # [v_x,v_y] (ft/sec)
-    #     self.intruder_vel = (intruder_vel) # [v_x,v_y] (ft/sec)
-        
     # For testing:
     def return_as_array(self):
         return np.array([self.distance_ownship_destination,
@@ -88,7 +81,8 @@ def convertAbsToLocal(absolute_encounter):
     # Compute the angle between -intruder_pos_relative_ownship and intruder_vel_relative_ownship. 
     # This angle is 0 for a straight-to-collision geometry and increases in a clockwise fashion.
     intruder_vel_relative_ownship = intruder_vel - ownship_vel
-    psi_io_rel_vel = math.degrees(math.atan2(intruder_vel_relative_ownship[0], intruder_vel_relative_ownship[1])) # w.r.t. the y-axis (-180, 180]
+    # w.r.t. the y-axis (-180, 180]
+    psi_io_rel_vel = math.degrees(math.atan2(intruder_vel_relative_ownship[0], intruder_vel_relative_ownship[1]))
     
     # angle of the psi_io_rel_vel vector w.r.t. the -intruder_pos_relative_ownship vector. 
     # This angle is 0 for a straight-to-collision geometry.

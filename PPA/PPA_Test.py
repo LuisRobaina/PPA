@@ -64,7 +64,6 @@ def constructPath(initial_state: State, encounter_path):
 
 if __name__ == "__main__":
 
-
     assert(os.path.exists(TEST_RESULTS_PATH))
 
     failedTests = 0

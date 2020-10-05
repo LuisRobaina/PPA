@@ -9,7 +9,7 @@ class StateActionQN:
         self.NO_TURN_Q = 0
         self.RIGHT_Q = 0
         self.N = 0
-        self.update(action,Q)
+        self.update(action, Q)
     
     def getBestAction(self):
         actions = ['LEFT','NO_TURN','RIGHT']
@@ -69,4 +69,4 @@ class StateActionQN:
         '''
     
     def __eq__(self, obj):
-        return isinstance(obj,StateActionQN) and obj.discrete_state == self.discrete_state
+        return isinstance(obj, StateActionQN) and obj.discrete_state == self.discrete_state

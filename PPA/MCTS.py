@@ -33,7 +33,7 @@ class MCST:
         # Set the MCST initial state.
         self.root = MCST_State(state)
         self.root.N = 1
-        self.visitedStatesPath = []             # Keep track of (state, action) pairs along the path to a final state.
+        self.visitedStatesPath = [self.root]    # Keep track of (state, action) pairs along the path to a final state.
         self.lastExpandedState = self.root      # Reference to the last expanded node where simulation starts from.
         self.state_action_reward = []           # List of 3 elements tuples (state,action,reward).
         
@@ -52,7 +52,8 @@ class MCST:
         
         # While a given state node has been expanded, select a child using UCB1.
         while mcst_node.visited_child_count == 3: # LEFT, NO_TURN, RIGHT child states have been visited.
-                        
+
+            # Exploration term:
             # c = math.sqrt(2)
             c = 4
 
@@ -70,16 +71,15 @@ class MCST:
             if nextChildIndex is 0:
                 mcst_node = mcst_node.no_turn
                 # Keep track of the state actions pair along the path to a final state.
-                self.visitedStatesPath.append( (mcst_node, 'NO_TURN'))
             elif nextChildIndex is 1:
                 mcst_node = mcst_node.turn_left
                 # Keep track of the state actions pair along the path to a final state.
-                self.visitedStatesPath.append( (mcst_node, 'LEFT'))
             else:
                 # Keep track of the state actions pair along the path to a final state.
                 mcst_node = mcst_node.turn_right
-                self.visitedStatesPath.append( (mcst_node, 'RIGHT'))
-                                              
+
+            self.visitedStatesPath.append(mcst_node)
+
         return mcst_node
     
     def expansion(self, mcst_node):
@@ -148,28 +148,31 @@ class MCST:
         self.lastExpandedState.Q += Q
         self.lastExpandedState.N += 1
         
-        for state_action in self.visitedStatesPath:
-            state_action[0].Q += Q
-            state_action[0].N += 1
-
-        for state_action in self.visitedStatesPath:
-            
-            state = state_action[0]
-            action = state_action[1]
-            
-            Q_state = state.Q
-            Q_after_action = 0
-            
-            if action is 'NO_TURN' and state.no_turn is not None:
-                Q_after_action = state.no_turn.Q 
-            elif action is 'LEFT' and state.turn_left is not None:
-                Q_after_action = state.turn_left.Q 
-            elif action is 'RIGHT' and state.turn_right is not None:
-                Q_after_action = state.turn_right.Q
-            
-            state_action_Q = Q_after_action - Q_state
-            
-            self.state_action_reward.append((state.state, action, state_action_Q))
+        for mcst_state in self.visitedStatesPath:
+            mcst_state.Q += Q
+            mcst_state.N += 1
     
         # Empty statesPath for next selection round.
         self.visitedStatesPath.clear()
+
+    # TODO: Document.
+    def getStateActionRewards(self, current_state):
+
+        if current_state is None:
+            return 0
+
+        self.state_action_reward.append((current_state.state,
+                                         'LEFT',
+                                         self.getStateActionRewards(current_state.turn_left)))
+
+        self.state_action_reward.append((current_state.state,
+                                         'RIGHT',
+                                         self.getStateActionRewards(current_state.turn_right)))
+
+        self.state_action_reward.append((current_state.state,
+                                         'NO_TURN',
+                                         self.getStateActionRewards(current_state.no_turn)))
+        return current_state.Q
+
+
+
