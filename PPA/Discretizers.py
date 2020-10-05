@@ -57,12 +57,12 @@ class DiscreteLocalState:
             a_r_v_p_bin = {self.angle_rel_vel_neg_rel_posBIN}
         '''
 
-    def __eq__(self,obj):
+    def __eq__(self, obj):
         """
             Two discrete states are the same if they share all discrete
             features.
         """
-        if not isinstance(obj,DiscreteLocalState):
+        if not isinstance(obj, DiscreteLocalState):
             return False
         if self.dis_ownship_destBIN != obj.dis_ownship_destBIN:
             return False

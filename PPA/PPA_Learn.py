@@ -95,6 +95,7 @@ def constructPath(initial_state: State, encounter_path):
     assert(not isTerminalState(initial_state))
 
     while isTerminalState(current_state) == 0:
+
         model_has_state = False
         
         current_local_state = convertAbsToLocal(current_state)
@@ -106,8 +107,10 @@ def constructPath(initial_state: State, encounter_path):
         
         # Generate model object.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
+        print("Looking for: ", model_lookup)
+        print("HAVE:")
         for state_in_model in Learned_Model:
-            if model_lookup == state_in_model:  # Same discrete local state.
+            if state_in_model == model_lookup:  # Same discrete local state.
                 model_has_state = True
                 action = state_in_model.getBestAction()
                 current_state = getNewState(current_state, action)
@@ -116,6 +119,7 @@ def constructPath(initial_state: State, encounter_path):
         
         if not model_has_state:
             print('STATE_NOT_MODELED')
+            input("Press Enter to continue...")
             return -1  # Path couldn't be constructed: Missing state in the model.
 
     """
