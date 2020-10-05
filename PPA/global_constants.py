@@ -23,7 +23,7 @@ ACTIONS = {                   # Actions are in degrees per second.
     'RIGHT': 5
 }
 
-MCTS_ITERATIONS = 2500
+MCTS_ITERATIONS = 3000
 
 # Directory Paths:
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'

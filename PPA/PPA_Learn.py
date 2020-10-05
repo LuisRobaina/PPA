@@ -174,7 +174,7 @@ def runEncounters():
     """
         Keep simulating until all training encounters are solved:
     """
-    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
+    for encounter_index in range(1):
         
         ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
         ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
