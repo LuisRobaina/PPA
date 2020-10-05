@@ -12,7 +12,7 @@ Learned_Model = []
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
 
-def learnFromEncounter(encounter_directory):
+def learnFromEncounter(encounter_directory, mcts):
 
     print("LEARNING  FROM ", encounter_directory)
 
@@ -27,7 +27,8 @@ def learnFromEncounter(encounter_directory):
     """
     # Generate a Monte Carlo Tree Search with initial state
     # at the initial encounter state.
-    mcts = MCST(encounter_state)
+    if mcts is None:
+        mcts = MCST(encounter_state)
     
     # Perform selection, expansion, and simulation procedures MCTS_ITERATIONS times.
     """
@@ -83,6 +84,7 @@ def learnFromEncounter(encounter_directory):
         Learned_Model.append(stateActionQN)
         print("Coverage % = ", (len(Learned_Model) / space_size ) * 100)
 
+    return mcts
 
 def constructPath(initial_state: State, encounter_path):
 
@@ -120,7 +122,6 @@ def constructPath(initial_state: State, encounter_path):
         
         if not model_has_state:
             print('STATE_NOT_MODELED')
-            input("Press Enter to continue...")
             return -1  # Path couldn't be constructed: Missing state in the model.
 
     """
@@ -164,7 +165,7 @@ def runEncounters():
     """
         Learn from training set:
     """
-    for encounter_index in range(1):
+    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
             # Create a directory for this encounter's description and resulting path after a test.
             ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
@@ -174,30 +175,43 @@ def runEncounters():
             # Create a .csv file to describe this encounter
             (ENCOUNTERS_GEOMETRIES.iloc[0]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
             # Learn:
-            learnFromEncounter(ENCOUNTER_PATH)
+            mcts = learnFromEncounter(ENCOUNTER_PATH, None)
+            init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
 
-    """
-        Keep simulating until all training encounters are solved:
-    """
-    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
-        
-        ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
-        ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
-        
-        init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
-        
-        found_traj = False  
-        while not found_traj:
+            found_traj = False
+            while not found_traj:
 
-            # Try to construct path and learn.
-            outcome = constructPath(init_state, ENCOUNTER_PATH)
+                # Try to construct path and learn.
+                outcome = constructPath(init_state, ENCOUNTER_PATH)
 
-            if outcome == -1: # Failed Path.
-                # Start Learning Again...
-                learnFromEncounter(ENCOUNTER_PATH)
-            if outcome == 0: # Success Path:
-                print("Optimal Trajectory Found ", ENCOUNTER_NAME)
-                found_traj = True
+                if outcome == -1: # Failed Path.
+                        # Start Learning Again...
+                        learnFromEncounter(ENCOUNTER_PATH, mcts)
+                if outcome == 0: # Success Path:
+                    print("Optimal Trajectory Found ", ENCOUNTER_NAME)
+                    found_traj = True
+    # """
+    #     Keep simulating until all training encounters are solved:
+    # """
+    # for encounter_index in range(NUMBER_OF_ENCOUNTERS):
+    #
+    #     ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
+    #     ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
+    #
+    #     init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
+    #
+    #     found_traj = False
+    #     while not found_traj:
+    #
+    #         # Try to construct path and learn.
+    #         outcome = constructPath(init_state, ENCOUNTER_PATH)
+    #
+    #         if outcome == -1: # Failed Path.
+    #             # Start Learning Again...
+    #             learnFromEncounter(ENCOUNTER_PATH)
+    #         if outcome == 0: # Success Path:
+    #             print("Optimal Trajectory Found ", ENCOUNTER_NAME)
+    #             found_traj = True
 
 
 if __name__ == "__main__":
