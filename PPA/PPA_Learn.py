@@ -113,6 +113,7 @@ def constructPath(initial_state: State, encounter_path):
             if state_in_model == model_lookup:  # Same discrete local state.
                 model_has_state = True
                 action = state_in_model.getBestAction()
+                print("Took action: ", action)
                 current_state = getNewState(current_state, action)
                 trajectory_states.append(current_state)
                 break
