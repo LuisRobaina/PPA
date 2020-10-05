@@ -159,7 +159,7 @@ def runEncounters():
     """
         Learn from training set:
     """
-    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
+    for encounter_index in range(1):
 
             # Create a directory for this encounter's description and resulting path after a test.
             ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
@@ -174,7 +174,7 @@ def runEncounters():
     """
         Keep simulating until all training encounters are solved:
     """
-    for encounter_index in range(1):
+    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
         
         ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
         ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
