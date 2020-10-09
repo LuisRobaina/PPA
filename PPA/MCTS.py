@@ -11,7 +11,8 @@ class MCST_State:
         self.state = state
         self.Q = 0
         self.N = 0
-        
+        # Dirty == 1 if this state was updated during simulations.
+        self.dirty_bit = 0
         # Child states based on the available actions. 
         self.turn_left = None
         self.turn_right = None
@@ -25,6 +26,9 @@ class MCST_State:
             Q: {self.Q}
             N: {self.N}
         '''
+
+    def clean(self):
+        self.dirty_bit = 0
 
 
 class MCST:
@@ -155,11 +159,19 @@ class MCST:
         # Empty statesPath for next selection round.
         self.visitedStatesPath.clear()
 
-    # TODO: Document.
+    # TODO: Update: No  need to go the full tree, only states that changed?
     def getStateActionRewards(self, current_state):
 
+        # Only iterate over nodes that changed, if node did not change
+        # its sub-tree will not change...
+
+        # Recursive base case.
         if current_state is None:
             return 0
+
+        # Avoid branches that did not update.
+        if current_state.dirty_bit == 0:
+            return current_state.Q
 
         self.state_action_reward.append((current_state.state,
                                          'LEFT',
@@ -172,6 +184,8 @@ class MCST:
         self.state_action_reward.append((current_state.state,
                                          'NO_TURN',
                                          self.getStateActionRewards(current_state.no_turn)))
+
+        current_state.clear()
         return current_state.Q
 
 

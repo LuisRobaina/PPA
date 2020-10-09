@@ -46,10 +46,12 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
         this encounter and convert the states to local coordinates to generate 
         (local_state,action,reward) tuples.
     """
+
+    # Empty the set of (state, action, reward):
     mcts.state_action_reward = []
     mcts.getStateActionRewards(mcts.root)
 
-    print("LEARNED ABOUT ", len(mcts.state_action_reward))
+    print("UPDATED/LEARNED ABOUT :", len(mcts.state_action_reward))
 
     # The set of state,action,rewards that it learnt from this encounter iteration.
     for state, action, reward in mcts.state_action_reward:
@@ -130,7 +132,6 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
                 model_index = 0
                 break
 
-        
         if not model_has_state:
             print('STATE_NOT_MODELED')
             return -1, current_state, len(Learned_Model) -1  # Path couldn't be constructed: Missing state in the model.

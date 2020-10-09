@@ -33,7 +33,7 @@ class DiscreteLocalState:
     def __init__(self, d_o_bin, d_i_o_bin, t_d_o_bin, t_i_o_bin, a_r_v_p_bin, o_v_bin, i_v_bin):
         """
             Initialize the discrete features of this discrete state using the resulting
-            'bins' for every feature discretized in the continious state space.
+            'bins' for every feature discretized in the continuous state space.
         """
         self.dis_ownship_destBIN = d_o_bin
         self.theta_destintation_ownshipBIN = t_d_o_bin
@@ -98,7 +98,7 @@ def discretizeLocalState(local_state, distance_discretizer, angle_discretizer, s
         local_state.intruder_vel
     ]
    
-    # Discretize features of the continiuos local state using the specified discretizers.
+    # Discretize features of the continuous local state using the specified discretizers.
     distance_bins = distance_discretizer.transform((np.array([LocalStateVectorDistances])).T)
     angle_bins = angle_discretizer.transform((np.array([LocalStateVectorAngles])).T)
     speed_bins = speed_discretizer.transform((np.array([LocalStateVectorSpeeds])).T)
