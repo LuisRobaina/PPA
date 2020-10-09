@@ -153,11 +153,12 @@ class MCST:
         self.lastExpandedState.N += 1
         
         for mcst_state in self.visitedStatesPath:
+
             # Update Q values and Number of Simulations.
             mcst_state.Q += Q
             mcst_state.N += 1
             # Mark it as dirty.
-            mcst_state.dirty_bit == 1
+            mcst_state.dirty_bit = 1
     
         # Empty statesPath for next selection round.
         self.visitedStatesPath.clear()
