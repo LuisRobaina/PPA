@@ -174,7 +174,7 @@ class MCST:
             return 0
 
         # Avoid branches that did not update.
-        if current_state.dirty_bit == 0:
+        if current_state.dirty_bit == 1:
             return current_state.Q
 
         self.state_action_reward.append((current_state.state,
@@ -189,7 +189,7 @@ class MCST:
                                          'NO_TURN',
                                          self.getStateActionRewards(current_state.no_turn)))
 
-        current_state.clear()
+        current_state.clean()
         return current_state.Q
 
 
