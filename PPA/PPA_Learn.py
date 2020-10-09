@@ -116,7 +116,7 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
         # Generate model object.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
         print("Looking for: ", model_lookup)
-        print("HAVE:", len(Learned_Model))
+        print("STATES IN MODEL:", len(Learned_Model))
 
         # Start checking learned model from last checked state.
         print("Starting from ", model_index)
