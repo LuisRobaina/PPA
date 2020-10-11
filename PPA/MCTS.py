@@ -1,5 +1,4 @@
 from random import random
-from PPA.State import *
 from PPA.LocalState import *
 import math
 
@@ -40,12 +39,15 @@ class MCST:
         self.visitedStatesPath = [self.root]    # Keep track of (state, action) pairs along the path to a final state.
         self.lastExpandedState = self.root      # Reference to the last expanded node where simulation starts from.
         self.state_action_reward = []           # List of 3 elements tuples (state,action,reward).
-        
+
+    def clearStatesPath(self):
+        self.visitedStatesPath = [self.root]
+
     def getBestAction(self):
 
         # The best action to take from this state is the one with the most simulations.
         simulations_count = [self.root.turn_left.N, self.root.no_turn.N, self.root.turn_right.N]
-        action_type = ['LEFT','NO_TURN','RIGHT']
+        action_type = ['LEFT', 'NO_TURN', 'RIGHT']
         action = action_type[simulations_count.index(max(simulations_count))]
         
         return action 
@@ -151,7 +153,8 @@ class MCST:
 
         self.lastExpandedState.Q += Q
         self.lastExpandedState.N += 1
-        
+        self.lastExpandedState.dirty_bit = 1
+
         for mcst_state in self.visitedStatesPath:
 
             # Update Q values and Number of Simulations.
@@ -161,7 +164,7 @@ class MCST:
             mcst_state.dirty_bit = 1
     
         # Empty statesPath for next selection round.
-        self.visitedStatesPath.clear()
+        self.clearStatesPath()
 
     # TODO: Update: No  need to go the full tree, only states that changed?
     def getStateActionRewards(self, current_state):
