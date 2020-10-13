@@ -10,9 +10,11 @@ class MCST_State:
         self.state = state
         self.Q = 0
         self.N = 0
+
         # Dirty == 1 if this state was updated during simulations.
         self.dirty_bit = 0
-        # Child states based on the available actions. 
+
+        # Child states based on the available actions.
         self.turn_left = None
         self.turn_right = None
         self.no_turn = None
@@ -57,7 +59,7 @@ class MCST:
         mcst_node = self.root
         
         # While a given state node has been expanded, select a child using UCB1.
-        while mcst_node.visited_child_count == 3: # LEFT, NO_TURN, RIGHT child states have been visited.
+        while mcst_node.visited_child_count == 3:   # LEFT, NO_TURN, RIGHT child states have been visited.
 
             # Exploration term:
             # c = math.sqrt(2)
@@ -93,23 +95,20 @@ class MCST:
         while True:
             rand_num = random()
             if rand_num < 0.33 and mcst_node.no_turn is None:
-                
                 # Expand to the no_turn state.                              
-                new_state = getNewState(mcst_node.state,'NO_TURN')                        
+                new_state = getNewState(mcst_node.state, 'NO_TURN')
                 mcst_node.no_turn = MCST_State(new_state)
                 self.lastExpandedState = mcst_node.no_turn                     
                 break
             elif rand_num < 0.66 and mcst_node.turn_left is None:
-                
                 # Expand to the turn_left state.
-                new_state = getNewState(mcst_node.state,'LEFT')                        
+                new_state = getNewState(mcst_node.state, 'LEFT')
                 mcst_node.turn_left = MCST_State(new_state)
                 self.lastExpandedState = mcst_node.turn_left     
                 break
             elif rand_num < 0.99 and mcst_node.turn_right is None:
                 # Expand to the turn_right state.
-                                              
-                new_state = getNewState(mcst_node.state,'RIGHT')                        
+                new_state = getNewState(mcst_node.state, 'RIGHT')
                 mcst_node.turn_right = MCST_State(new_state)
                 self.lastExpandedState = mcst_node.turn_right
                 break
@@ -119,41 +118,44 @@ class MCST:
     def simulate(self):
         # Initial reward for this MCTS node.
         Q = 0  
-        # Last state in the MCTS path
+        # Last state in the MCTS path.
         simState = self.lastExpandedState.state
 
         while True:
             rand_num = random()
             # Select a random action from this state.
             if rand_num < 0.33:
-                simState = getNewState(simState,'NO_TURN')
+                simState = getNewState(simState, 'NO_TURN')
                 # No penalty for NO_TURN action.
             elif rand_num < 0.66:
                 # TURN_LEFT.
-                simState = getNewState(simState,'LEFT')
+                simState = getNewState(simState, 'LEFT')
                 Q += TURN_ACTION_REWARD
             else:
                 # TURN_RIGHT.
-                simState = getNewState(simState,'RIGHT')
+                simState = getNewState(simState, 'RIGHT')
                 Q += TURN_ACTION_REWARD
             
-            Q += TIME_REWARD # Time penalty for every action.
+            Q += TIME_REWARD    # Time penalty for every action.
             
             # Check if this state is final.
             state_Q = isTerminalState(simState)
-            if state_Q is not 0: # Non-zero means simState is terminal (refer to isTerminalState).
+            if state_Q is not 0:    # Non-zero means simState is terminal (refer to isTerminalState).
                 # Compute Reward/Score and backpropagate.
                 Q += state_Q
-                break  # End simulation.
+                break   # End simulation.
             
         # Back-Propagate the reward.
         self.backpropagate(Q)
 
     def backpropagate(self, Q):
 
+        # Update Last Expanded state and mark it as dirty.
         self.lastExpandedState.Q += Q
         self.lastExpandedState.N += 1
         self.lastExpandedState.dirty_bit = 1
+
+        print("VISITED: ", len(self.visitedStatesPath))
 
         for mcst_state in self.visitedStatesPath:
 
@@ -166,7 +168,6 @@ class MCST:
         # Empty statesPath for next selection round.
         self.clearStatesPath()
 
-    # TODO: Update: No  need to go the full tree, only states that changed?
     def getStateActionRewards(self, current_state):
 
         # Only iterate over nodes that changed, if node did not change

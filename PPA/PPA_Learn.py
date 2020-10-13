@@ -86,7 +86,7 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
         
         print("NEW. Added to Model")
         Learned_Model.append(stateActionQN)
-        print("Coverage % = ", (len(Learned_Model) / space_size ) * 100)
+        print("Coverage % = ", (len(Learned_Model) / space_size) * 100)
 
     return mcts
 
