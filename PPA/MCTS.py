@@ -59,13 +59,13 @@ class MCST:
         mcst_node = self.root
         
         # While a given state node has been expanded, select a child using UCB1.
-        while mcst_node.visited_child_count == 3:   # LEFT, NO_TURN, RIGHT child states have been visited.
+        while mcst_node.visited_child_count == 3:   # LEFT, NO_TURN, RIGHT child states have been expanded.
 
             # Exploration term:
             # c = math.sqrt(2)
             c = 4
 
-            # Explore or exploit...    
+            # Explore or exploit? UCB1 formula.
             UCB1_left = (mcst_node.turn_left.Q)/(mcst_node.turn_left.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_left.N))
 
             UCB1_right = (mcst_node.turn_right.Q)/(mcst_node.turn_right.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_right.N))
@@ -179,9 +179,8 @@ class MCST:
             return 0
 
         # Avoid branches that did not update.
-
-        # if current_state.dirty_bit == 0:
-        #     return current_state.Q
+        if current_state.dirty_bit == 0:
+            return current_state.Q
 
         self.state_action_reward.append((current_state.state,
                                          'LEFT',
