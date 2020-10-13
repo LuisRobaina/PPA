@@ -86,6 +86,7 @@ class MCST:
                 # Keep track of the state actions pair along the path to a final state.
                 mcst_node = mcst_node.turn_right
 
+            # Add selected node to the Visited States Path.
             self.visitedStatesPath.append(mcst_node)
 
         return mcst_node
@@ -178,8 +179,9 @@ class MCST:
             return 0
 
         # Avoid branches that did not update.
-        if current_state.dirty_bit == 0:
-            return current_state.Q
+
+        # if current_state.dirty_bit == 0:
+        #     return current_state.Q
 
         self.state_action_reward.append((current_state.state,
                                          'LEFT',
