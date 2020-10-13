@@ -37,6 +37,7 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
         we learn something about one or more continuous state and action pairs.
     """
     for i in range(MCTS_ITERATIONS):
+
         selected_state = mcts.selection()
         mcts.expansion(selected_state)
         mcts.simulate()
@@ -49,12 +50,17 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
 
     # Empty the set of (state, action, reward):
     mcts.state_action_reward = []
+    # Get State Action Rewards for states that updated.
     mcts.getStateActionRewards(mcts.root)
 
-    print("UPDATED/LEARNED ABOUT :", len(mcts.state_action_reward))
+    # print("UPDATED/LEARNED ABOUT :", len(mcts.state_action_reward))
 
     # The set of state,action,rewards that it learnt from this encounter iteration.
     for state, action, reward in mcts.state_action_reward:
+
+        if reward == 0:
+            # Non expanded child.
+            continue
 
         already_in_model = False
 
@@ -66,12 +72,12 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
                                                     angle_discretizer, 
                                                     speed_discretizer)
         # Generate model object.
+        # print("Creating stateActionQN w: ", reward)
         stateActionQN = StateActionQN(discrete_local_state, action, reward)
         
         for state_in_model in Learned_Model:
             # Check the model in memory:
             if state_in_model == stateActionQN:
-
                 """
                     This discrete local state already
                     exists in our model: Update our 
@@ -82,11 +88,14 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
                 break
 
         if already_in_model is True:
+            # print("Updated:", stateActionQN)
             continue
         
-        print("NEW. Added to Model")
+        # print("NEW. Added to Model:", stateActionQN)
+
         Learned_Model.append(stateActionQN)
-        print("Coverage % = ", (len(Learned_Model) / space_size) * 100)
+
+        #print("Coverage % = ", (len(Learned_Model) / space_size) * 100)
 
     return mcts
 
@@ -95,7 +104,7 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
 
     global trajectory_states
 
-    print("TRAJ FOR:", encounter_path)
+    print("CONSTRUCTING TRAJ FOR:", encounter_path)
 
     current_state = last_traj_state
     
@@ -119,9 +128,8 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
         print("STATES IN MODEL:", len(Learned_Model))
 
         # Start checking learned model from last checked state.
-        print("Starting from ", model_index)
         for state_in_model in Learned_Model[model_index:]:
-
+            print("IN MODEL: ", state_in_model)
             if state_in_model == model_lookup:  # Same discrete local state.
 
                 model_has_state = True

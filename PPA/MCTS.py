@@ -62,8 +62,7 @@ class MCST:
         while mcst_node.visited_child_count == 3:   # LEFT, NO_TURN, RIGHT child states have been expanded.
 
             # Exploration term:
-            # c = math.sqrt(2)
-            c = 4
+            c = UCB1_C
 
             # Explore or exploit? UCB1 formula.
             UCB1_left = (mcst_node.turn_left.Q)/(mcst_node.turn_left.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_left.N))
@@ -156,10 +155,7 @@ class MCST:
         self.lastExpandedState.N += 1
         self.lastExpandedState.dirty_bit = 1
 
-        print("VISITED: ", len(self.visitedStatesPath))
-
         for mcst_state in self.visitedStatesPath:
-
             # Update Q values and Number of Simulations.
             mcst_state.Q += Q
             mcst_state.N += 1
@@ -185,11 +181,9 @@ class MCST:
         self.state_action_reward.append((current_state.state,
                                          'LEFT',
                                          self.getStateActionRewards(current_state.turn_left)))
-
         self.state_action_reward.append((current_state.state,
                                          'RIGHT',
                                          self.getStateActionRewards(current_state.turn_right)))
-
         self.state_action_reward.append((current_state.state,
                                          'NO_TURN',
                                          self.getStateActionRewards(current_state.no_turn)))
