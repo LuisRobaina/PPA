@@ -102,7 +102,6 @@ def convertAbsToLocal(absolute_encounter):
 
 
 def isTerminalState(state: State):
-
     """
     Returns a non-zero reward for a final state:
 
@@ -112,11 +111,9 @@ def isTerminalState(state: State):
 
     Otherwise return 0 for non-final states.
     """
-
     local_state = convertAbsToLocal(state)
     
     if local_state.distance_ownship_destination <= DESTINATION_DIST_ERROR:
-        print("DESTINATION_STATE")
         return DESTINATION_STATE_REWARD     # Close enough to the destination, reward it.
     if local_state.distance_ownship_destination > ABANDON_STATE_ERROR:
         return ABANDON_STATE_REWARD     # Too far from destination, penalty.
