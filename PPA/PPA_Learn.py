@@ -129,7 +129,6 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
 
         # Start checking learned model from last checked state.
         for state_in_model in Learned_Model[model_index:]:
-            print("IN MODEL: ", state_in_model)
             if state_in_model == model_lookup:  # Same discrete local state.
 
                 model_has_state = True
