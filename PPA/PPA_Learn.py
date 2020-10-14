@@ -12,7 +12,6 @@ trajectory_states = []
 # Retrieve discretizers:
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
-prev_action = ''
 
 def learnFromEncounter(encounter_directory, mcts: MCST):
 
@@ -102,7 +101,6 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
 def constructPath(last_traj_state: State, encounter_path, model_index):
 
     global trajectory_states
-    global prev_action
 
     print("CONSTRUCTING TRAJ FOR:", encounter_path)
 
@@ -134,19 +132,15 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
                 model_has_state = True
                 action = state_in_model.getBestAction()
                 print("Took action: ", action)
-                prev_action = action
                 current_state = getNewState(current_state, action)
                 trajectory_states.append(current_state)
                 model_index = 0
                 break
 
         if not model_has_state:
-
             # TODO: REMOVE.
-            print('STATE_NOT_MODELED. TOOK ACTION: ', prev_action)
-            current_state = getNewState(current_state, prev_action)
-            trajectory_states.append(current_state)
-            # return -1, current_state, len(Learned_Model)-1  # Path couldn't be constructed: Missing state in the model.
+            print('STATE_NOT_MODELED')
+            return -1, current_state, len(Learned_Model)-1  # Path couldn't be constructed: Missing state in the model.
 
     """
         What final state did we reach?
@@ -163,7 +157,7 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
 
         # Save path to csv file:
         traj = np.array([trajectory_states])
-        traj.tofile(encounter_path+"/" + "Traj.csv", sep=',')
+        traj.tofile(encounter_path + "/" + "Traj.csv", sep=',')
         trajectory_states = []
         return 0, current_state, 0  # Success path.
 

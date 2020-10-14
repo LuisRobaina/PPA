@@ -2,7 +2,9 @@ import os
 
 # Algorithm's Constants:
 
-TIME_INCREMENT = 1.0            # Seconds that each action runs for.
+# TODO: Change to 1.
+
+TIME_INCREMENT = 5.0            # Seconds that each action runs for.
 GAMMA = 1.0                     # Discount Factor.
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
@@ -25,7 +27,7 @@ ACTIONS = {                     # Actions are in degrees per second.
 
 # TODO: Change back...
 MCTS_ITERATIONS = 3000
-UCB1_C = 10
+UCB1_C = 20
 
 # Directory Paths:
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'

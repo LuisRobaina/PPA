@@ -4,16 +4,16 @@ import numpy as np
 from numpy import linalg as LA
 import pandas as pd
 
-# Define a state object type.
+
 class State:
-    
+    # Define a state object type.
     def __init__(self, ownship_pos, intruder_pos, ownship_vel, intruder_vel):
         
         # np.arrays all.
-        self.ownship_pos  = ownship_pos   # [x,y] (ft)
-        self.intruder_pos = intruder_pos  # [x,y] (ft)
-        self.ownship_vel  = ownship_vel   # [v_x,v_y] (ft/sec)
-        self.intruder_vel = intruder_vel  # [v_x,v_y] (ft/sec)
+        self.ownship_pos = ownship_pos      # [x,y] (ft)
+        self.intruder_pos = intruder_pos    # [x,y] (ft)
+        self.ownship_vel = ownship_vel      # [v_x,v_y] (ft/sec)
+        self.intruder_vel = intruder_vel    # [v_x,v_y] (ft/sec)
 
     def get_horizontal_distance(self):      # (ft)
         return LA.norm(self.ownship_pos - self.intruder_pos)
