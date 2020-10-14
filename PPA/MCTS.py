@@ -70,10 +70,20 @@ class MCST:
             UCB1_right = (mcst_node.turn_right.Q)/(mcst_node.turn_right.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_right.N))
 
             UCB1_no_turn = (mcst_node.no_turn.Q)/(mcst_node.no_turn.N) + c * math.sqrt ((math.log(mcst_node.N)/mcst_node.no_turn.N))
-            
+
+            # TODO: REMOVE...
+            selectStr = f'''
+                    PARENT_N = {mcst_node.N},
+                    LEFT Q: {mcst_node.turn_left.Q}, LN: {mcst_node.turn_left.N},
+                    RIGTH Q: {mcst_node.turn_right.Q}, RN: {mcst_node.turn_right.N},
+                    NO_TURN Q: {mcst_node.no_turn.Q}, NN: {mcst_node.no_turn.N}
+                    
+            '''
+            print(selectStr)
+
             values = [UCB1_no_turn, UCB1_left, UCB1_right]
             
-            nextChildIndex = values.index(max(UCB1_no_turn,UCB1_left,UCB1_right))
+            nextChildIndex = values.index(max(UCB1_no_turn, UCB1_left, UCB1_right))
 
             if nextChildIndex is 0:
                 mcst_node = mcst_node.no_turn
@@ -93,6 +103,7 @@ class MCST:
     def expansion(self, mcst_node):
 
         while True:
+            # TODO: REFACTOR USING random.choice([list]).
             rand_num = random()
             if rand_num < 0.33 and mcst_node.no_turn is None:
                 # Expand to the no_turn state.                              
@@ -122,6 +133,9 @@ class MCST:
         simState = self.lastExpandedState.state
 
         while True:
+
+            # TODO: REFACTOR USING random.choice([list]).
+            # TODO: Add discount factor?
             rand_num = random()
             # Select a random action from this state.
             if rand_num < 0.33:

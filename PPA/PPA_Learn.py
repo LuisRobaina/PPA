@@ -140,8 +140,15 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
                 break
 
         if not model_has_state:
-            print('STATE_NOT_MODELED')
-            return -1, current_state, len(Learned_Model) -1  # Path couldn't be constructed: Missing state in the model.
+
+            # TODO: REMOVE. Taking a random action from here.
+            print('STATE_NOT_MODELED. TAKING RAND ACTION.')
+            action = random.choice(['LEFT', 'RIGHT', 'NO_TURN'])
+
+            current_state = getNewState(current_state, action )
+            trajectory_states.append(current_state)
+
+            #return -1, current_state, len(Learned_Model) -1  # Path couldn't be constructed: Missing state in the model.
 
     """
         What final state did we reach?
@@ -215,29 +222,6 @@ def runEncounters():
                 if outcome == 0:    # Success Path:
                     print("Optimal Trajectory Found ", ENCOUNTER_NAME)
                     found_traj = True
-
-    # """
-    #     Keep simulating until all training encounters are solved:
-    # """
-    # for encounter_index in range(NUMBER_OF_ENCOUNTERS):
-    #
-    #     ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
-    #     ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
-    #
-    #     init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
-    #
-    #     found_traj = False
-    #     while not found_traj:
-    #
-    #         # Try to construct path and learn.
-    #         outcome = constructPath(init_state, ENCOUNTER_PATH)
-    #
-    #         if outcome == -1: # Failed Path.
-    #             # Start Learning Again...
-    #             learnFromEncounter(ENCOUNTER_PATH)
-    #         if outcome == 0: # Success Path:
-    #             print("Optimal Trajectory Found ", ENCOUNTER_NAME)
-    #             found_traj = True
 
 
 if __name__ == "__main__":

@@ -26,6 +26,7 @@ class State:
             int_vel (ft/s) = ({self.intruder_vel})        
         """
 
+
 def getInitStateFromEncounter(encounter_directory):
     
     # Load an encounter description from the directory.
@@ -43,6 +44,7 @@ def getInitStateFromEncounter(encounter_directory):
     # Given the encounter properties, compute the initial state of the system of the two aircrafts.
     encounter_state = computeInitialState(encounter_properties)
     return encounter_state
+
 
 def computeInitialState(encounter_properties: dict) -> State:
     """
