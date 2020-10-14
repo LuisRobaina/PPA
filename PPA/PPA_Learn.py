@@ -12,6 +12,7 @@ trajectory_states = []
 # Retrieve discretizers:
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
+prev_action = ''
 
 def learnFromEncounter(encounter_directory, mcts: MCST):
 
@@ -90,11 +91,9 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
         if already_in_model is True:
             # print("Updated:", stateActionQN)
             continue
-        
+
         # print("NEW. Added to Model:", stateActionQN)
-
         Learned_Model.append(stateActionQN)
-
         #print("Coverage % = ", (len(Learned_Model) / space_size) * 100)
 
     return mcts
@@ -103,6 +102,7 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
 def constructPath(last_traj_state: State, encounter_path, model_index):
 
     global trajectory_states
+    global prev_action
 
     print("CONSTRUCTING TRAJ FOR:", encounter_path)
 
@@ -134,6 +134,7 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
                 model_has_state = True
                 action = state_in_model.getBestAction()
                 print("Took action: ", action)
+                prev_action = action
                 current_state = getNewState(current_state, action)
                 trajectory_states.append(current_state)
                 model_index = 0
@@ -141,14 +142,11 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
 
         if not model_has_state:
 
-            # TODO: REMOVE. Taking a random action from here.
-            print('STATE_NOT_MODELED. TAKING RAND ACTION.')
-            action = random.choice(['LEFT', 'RIGHT', 'NO_TURN'])
-
-            current_state = getNewState(current_state, action )
+            # TODO: REMOVE.
+            print('STATE_NOT_MODELED. TOOK ACTION: ', prev_action)
+            current_state = getNewState(current_state, prev_action)
             trajectory_states.append(current_state)
-
-            #return -1, current_state, len(Learned_Model) -1  # Path couldn't be constructed: Missing state in the model.
+            # return -1, current_state, len(Learned_Model)-1  # Path couldn't be constructed: Missing state in the model.
 
     """
         What final state did we reach?
@@ -215,7 +213,6 @@ def runEncounters():
                 outcome, last_traj_state, last_model_index = constructPath(last_traj_state,
                                                                            ENCOUNTER_PATH,
                                                                            last_model_index)
-
                 if outcome == -1:   # Failed Path.
                         # Start Learning Again...
                         learnFromEncounter(ENCOUNTER_PATH, mcts)
