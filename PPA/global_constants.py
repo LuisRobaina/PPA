@@ -25,7 +25,8 @@ ACTIONS = {                     # Actions are in degrees per second.
 }
 
 # TODO: Change back...
-MCTS_ITERATIONS = 3000
+MCTS_ITERATIONS = 10000
+# UCB1 Exploration term.
 UCB1_C = 20
 
 # Directory Paths:
