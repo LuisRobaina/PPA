@@ -3,7 +3,6 @@ import os
 # Algorithm's Constants:
 
 # TODO: Change to 1.
-
 TIME_INCREMENT = 5.0            # Seconds that each action runs for.
 GAMMA = 1.0                     # Discount Factor.
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.

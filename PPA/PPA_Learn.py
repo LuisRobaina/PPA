@@ -21,7 +21,7 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
 
     # Sanity check -- are the two aircraft's initial positions well separated
     # by at least the well clear?
-    assert(encounter_state.get_horizontal_distance() >=  DWC_DIST)
+    # assert(encounter_state.get_horizontal_distance() >=  DWC_DIST)
 
     """
         Run Monte Carlo Tree Search:
@@ -105,9 +105,6 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
     print("CONSTRUCTING TRAJ FOR:", encounter_path)
 
     current_state = last_traj_state
-    
-    # Is initial state a terminal state?
-    assert(not isTerminalState(current_state))
 
     while isTerminalState(current_state) == 0:
 
