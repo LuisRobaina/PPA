@@ -20,7 +20,16 @@ class MCST_State:
         self.no_turn = None
 
         self.visited_child_count = 0
-        
+
+    def updateQN(self, New_Q):
+
+        if self.N == 0:
+            self.Q = New_Q
+        else:  # Average.
+            current_avg = self.Q
+            new_avg = current_avg + ((New_Q - current_avg) / (self.N + 1))
+            self.Q = new_avg
+
     def __str__(self):
         return f'''
             STATE: {str(self.state)}
@@ -53,7 +62,7 @@ class MCST:
         action = action_type[simulations_count.index(max(simulations_count))]
         
         return action 
-    
+
     def selection(self):
 
         mcst_node = self.root
@@ -65,21 +74,21 @@ class MCST:
             c = UCB1_C
 
             # Explore or exploit? UCB1 formula.
-            UCB1_left = (mcst_node.turn_left.Q)/(mcst_node.turn_left.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_left.N))
+            UCB1_left = mcst_node.turn_left.Q + c * math.sqrt((math.log(mcst_node.N) / mcst_node.turn_left.N))
 
-            UCB1_right = (mcst_node.turn_right.Q)/(mcst_node.turn_right.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.turn_right.N))
+            UCB1_right = mcst_node.turn_right.Q + c * math.sqrt((math.log(mcst_node.N) / mcst_node.turn_right.N))
 
-            UCB1_no_turn = (mcst_node.no_turn.Q)/(mcst_node.no_turn.N) + c * math.sqrt((math.log(mcst_node.N)/mcst_node.no_turn.N))
+            UCB1_no_turn = mcst_node.no_turn.Q + c * math.sqrt((math.log(mcst_node.N) / mcst_node.no_turn.N))
 
-            # # TODO: REMOVE...
-            # selectStr = f'''
-            #         PARENT_N = {mcst_node.N},
-            #         LEFT Q: {mcst_node.turn_left.Q}, LN: {mcst_node.turn_left.N},
-            #         RIGTH Q: {mcst_node.turn_right.Q}, RN: {mcst_node.turn_right.N},
-            #         NO_TURN Q: {mcst_node.no_turn.Q}, NN: {mcst_node.no_turn.N}
-            #
-            # '''
-            # print(selectStr)
+            # TODO: REMOVE...
+            selectStr = f'''
+                    PARENT_N = {mcst_node.N},
+                    LEFT Q: {mcst_node.turn_left.Q}, LN: {mcst_node.turn_left.N},
+                    RIGTH Q: {mcst_node.turn_right.Q}, RN: {mcst_node.turn_right.N},
+                    NO_TURN Q: {mcst_node.no_turn.Q}, NN: {mcst_node.no_turn.N}
+
+            '''
+            print(selectStr)
 
             values = [UCB1_no_turn, UCB1_left, UCB1_right]
             
@@ -128,7 +137,9 @@ class MCST:
         
     def simulate(self):
         # Initial reward for this MCTS node.
-        Q = 0  
+        Q = 0
+        # Total Discount.
+        discount_factor = GAMMA
         # Last state in the MCTS path.
         simState = self.lastExpandedState.state
 
@@ -137,6 +148,7 @@ class MCST:
             # TODO: REFACTOR USING random.choice([list]).
             # TODO: Add discount factor?
             rand_num = random()
+
             # Select a random action from this state.
             if rand_num < 0.33:
                 simState = getNewState(simState, 'NO_TURN')
@@ -158,9 +170,11 @@ class MCST:
                 # Compute Reward/Score and backpropagate.
                 Q += state_Q
                 break   # End simulation.
-            
+
+            discount_factor *= GAMMA
+
         # Back-Propagate the reward.
-        self.backpropagate(Q)
+        self.backpropagate(discount_factor*Q)
 
     def backpropagate(self, Q):
 
@@ -171,7 +185,7 @@ class MCST:
 
         for mcst_state in self.visitedStatesPath:
             # Update Q values and Number of Simulations.
-            mcst_state.Q += Q
+            mcst_state.updateQN(Q)
             mcst_state.N += 1
             # Mark it as dirty.
             mcst_state.dirty_bit = 1

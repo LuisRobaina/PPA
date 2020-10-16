@@ -19,6 +19,7 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
 
     encounter_state = getInitStateFromEncounter(encounter_directory) 
 
+    # TODO: Think about this...
     # Sanity check -- are the two aircraft's initial positions well separated
     # by at least the well clear?
     # assert(encounter_state.get_horizontal_distance() >=  DWC_DIST)

@@ -4,7 +4,6 @@ import os
 
 # TODO: Change to 1.
 TIME_INCREMENT = 5.0            # Seconds that each action runs for.
-GAMMA = 1.0                     # Discount Factor.
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1    # Reward for reaching the destination state.
@@ -27,7 +26,8 @@ ACTIONS = {                     # Actions are in degrees per second.
 # TODO: Change back...
 MCTS_ITERATIONS = 10000
 # UCB1 Exploration term.
-UCB1_C = 20
+UCB1_C = 5
+GAMMA = 0.9                     # Discount Factor.
 
 # Directory Paths:
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
