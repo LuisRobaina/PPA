@@ -81,14 +81,14 @@ class MCST:
             UCB1_no_turn = mcst_node.no_turn.Q + c * math.sqrt((math.log(mcst_node.N) / mcst_node.no_turn.N))
 
             # TODO: REMOVE...
-            selectStr = f'''
-                    PARENT_N = {mcst_node.N},
-                    LEFT Q: {mcst_node.turn_left.Q}, LN: {mcst_node.turn_left.N},
-                    RIGTH Q: {mcst_node.turn_right.Q}, RN: {mcst_node.turn_right.N},
-                    NO_TURN Q: {mcst_node.no_turn.Q}, NN: {mcst_node.no_turn.N}
-
-            '''
-            print(selectStr)
+            # selectStr = f'''
+            #         PARENT_N = {mcst_node.N},
+            #         LEFT Q: {mcst_node.turn_left.Q}, LN: {mcst_node.turn_left.N},
+            #         RIGTH Q: {mcst_node.turn_right.Q}, RN: {mcst_node.turn_right.N},
+            #         NO_TURN Q: {mcst_node.no_turn.Q}, NN: {mcst_node.no_turn.N}
+            #
+            # '''
+            # print(selectStr)
 
             values = [UCB1_no_turn, UCB1_left, UCB1_right]
             
