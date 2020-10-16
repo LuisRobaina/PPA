@@ -1,4 +1,4 @@
-from random import random
+import random
 from PPA.LocalState import *
 import math
 
@@ -113,7 +113,7 @@ class MCST:
 
         while True:
             # TODO: REFACTOR USING random.choice([list]).
-            rand_num = random()
+            rand_num = random.random()
             if rand_num < 0.33 and mcst_node.no_turn is None:
                 # Expand to the no_turn state.                              
                 new_state = getNewState(mcst_node.state, 'NO_TURN')
@@ -147,7 +147,7 @@ class MCST:
 
             # TODO: REFACTOR USING random.choice([list]).
             # TODO: Add discount factor?
-            rand_num = random()
+            rand_num = random.random()
 
             # Select a random action from this state.
             if rand_num < 0.33:

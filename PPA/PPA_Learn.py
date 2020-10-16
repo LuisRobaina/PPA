@@ -3,6 +3,9 @@ from PPA.StateActionQN import *
 import pickle
 from PPA.State import *
 
+# Tests Failed
+FAILS = 0
+
 # Set of StateActionQN that represent the model.
 Learned_Model = []
 
@@ -12,6 +15,9 @@ trajectory_states = []
 # Retrieve discretizers:
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
+ENCOUNTER_MCTS = []
+
+# ENCOUNTER
 
 def learnFromEncounter(encounter_directory, mcts: MCST):
 
@@ -192,26 +198,46 @@ def runEncounters():
             # Create a .csv file to describe this encounter
             (ENCOUNTERS_GEOMETRIES.iloc[0]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
             # Learn:
+
             mcts = learnFromEncounter(ENCOUNTER_PATH, None)
-            init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
+            ENCOUNTER_MCTS.append(mcts)
 
-            found_traj = False
-            last_traj_state = init_state
-            trajectory_states.append(init_state)
-            last_model_index = 0
+            # TODO: remove.
+            sample = random.sample(Learned_Model, 2)
+            for actionQN in sample:
+                print(actionQN)
 
-            while not found_traj:
-                # Try to construct path and learn.
-                outcome, last_traj_state, last_model_index = constructPath(last_traj_state,
-                                                                           ENCOUNTER_PATH,
-                                                                           last_model_index)
-                if outcome == -1:   # Failed Path.
-                        # Start Learning Again...
-                        learnFromEncounter(ENCOUNTER_PATH, mcts)
-                if outcome == 0:    # Success Path:
-                    print("Optimal Trajectory Found ", ENCOUNTER_NAME)
-                    found_traj = True
+    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
+        global trajectory_states
+        global FAILS
+
+        trajectory_states = []
+
+        ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
+        ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
+
+        init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
+
+        found_traj = False
+        last_traj_state = init_state
+        trajectory_states.append(init_state)
+        last_model_index = 0
+
+        # while not found_traj:
+
+        # Try to construct path and learn.
+        outcome, last_traj_state, last_model_index = constructPath(last_traj_state,
+                                                                       ENCOUNTER_PATH,
+                                                                       last_model_index)
+        if outcome == -1:   # Failed Path.
+                FAILS += 1
+                # Start Learning Again...
+                # learnFromEncounter(ENCOUNTER_PATH, ENCOUNTER_MCTS[encounter_index])
+
+        if outcome == 0:    # Success Path:
+            print("Optimal Trajectory Found ", ENCOUNTER_NAME)
+            found_traj = True
 
 if __name__ == "__main__":
 
@@ -219,6 +245,7 @@ if __name__ == "__main__":
     print("STATE SPACE SIZE : ", space_size_str)
 
     runEncounters()
+    print("FAILED = ", FAILS)
 
     with open('model.pickle', 'wb') as f:
         # Pickle the 'data' dictionary using the highest protocol available.

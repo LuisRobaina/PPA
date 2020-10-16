@@ -70,9 +70,9 @@ def computeInitialState(encounter_properties: dict) -> State:
     """
     # Velocity of the ownship.
     # Note: Ownship flights north so the x component of ownship_vel is 0.
-    ownship_vel_x = 0
+    ownship_vel_x = 0   # (ft/s).
     speed_ownship = float(encounter_properties[4])
-    ownship_vel_y = speed_ownship * NMI_TO_FT / HR_TO_SEC # (ft/s).
+    ownship_vel_y = speed_ownship * NMI_TO_FT / HR_TO_SEC   # (ft/s).
     
     # Velocity vector for the ownship. 
     ownship_vel = np.array([ownship_vel_x, ownship_vel_y])
@@ -96,8 +96,8 @@ def computeInitialState(encounter_properties: dict) -> State:
     """
     # Velocity of the intruder:
     
-    intruder_velocity_magnitud = float(encounter_properties[5]) * NMI_TO_FT / HR_TO_SEC # (ft/s). 
-    intruder_heading_angle = float(encounter_properties[6]) # degrees.
+    intruder_velocity_magnitud = float(encounter_properties[5]) * NMI_TO_FT / HR_TO_SEC     # (ft/s).
+    intruder_heading_angle = float(encounter_properties[6])     # degrees.
     
     intruder_vel_x = intruder_velocity_magnitud * math.sin(math.radians(intruder_heading_angle))
     intruder_vel_y = intruder_velocity_magnitud * math.cos(math.radians(intruder_heading_angle))
@@ -114,7 +114,7 @@ def computeInitialState(encounter_properties: dict) -> State:
     # Get the horizontal distance at CPA.
     S = float(encounter_properties[3])
     # Initial distance btw aircrafts:
-    delta_pos_magnitud = math.sqrt( (S**2) + (time_to_CPA**2 * delta_vel_magnitud**2) )
+    delta_pos_magnitud = math.sqrt((S**2) + (time_to_CPA**2 * delta_vel_magnitud**2))
     
     # Let the angle between delta_vel_t0 and delta_post_t0 be theta.
     cos_theta = -time_to_CPA * math.sqrt(delta_vel_magnitud**2) / delta_pos_magnitud;
