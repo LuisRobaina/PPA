@@ -37,7 +37,10 @@ def constructPath(initial_state: State, encounter_path):
         
         if not model_has_state:
             print('STATE_NOT_MODELED')
-            return -1 # Path couldn't be contructed missing states in model.
+            # Save path to csv file:
+            df = pd.DataFrame.from_dict(current_state.__dict__, orient='index')
+            df.to_csv(encounter_path + "/" + "Traj.csv")
+            return -1   # Path couldn't be contructed missing states in model.
     
     # What final state did we reach?
     """
@@ -47,19 +50,22 @@ def constructPath(initial_state: State, encounter_path):
         LODWC_REWARD: Lost of well clear (Fails)
     """
     reward = isTerminalState(current_state)
-    if reward is DESTINATION_STATE_REWARD: 
-        
+    if reward is DESTINATION_STATE_REWARD:
         # Save path to csv file:
-        df = pd.DataFrame.from_dict(current_state.__dict__,orient='index')
-        df.to_csv(encounter_path+"/"+ "Traj.csv")
-        
-        return 0 # Success path.
+
+        df = pd.DataFrame.from_dict(current_state.__dict__, orient='index')
+        df.to_csv(encounter_path + "/" + "Traj.csv")
+        return 0    # Success path.
     else:
+
+        df = pd.DataFrame.from_dict(current_state.__dict__, orient='index')
+        df.to_csv(encounter_path + "/" + "Traj.csv")
+
         if reward == ABANDON_STATE_REWARD:
             print('ABANDON_STATE')
         elif reward == LODWC_REWARD:
             print('LODWC')
-        return -1 # Failed path.
+        return -1   # Failed path.
 
 
 if __name__ == "__main__":
