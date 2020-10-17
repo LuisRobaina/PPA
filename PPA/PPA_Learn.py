@@ -2,6 +2,7 @@ from PPA.MCTS import *
 from PPA.StateActionQN import *
 import pickle
 from PPA.State import *
+from PPA.global_constants import *
 
 # Tests Failed
 FAILS = 0
@@ -18,7 +19,6 @@ distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdi
 ENCOUNTER_MCTS = []
 
 # ENCOUNTER
-
 def learnFromEncounter(encounter_directory, mcts: MCST):
 
     print("LEARNING  FROM ", encounter_directory)
@@ -174,12 +174,23 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
         return -1, current_state, 0  # Failed path.
 
 
+# TODO: COMMENT.
 def runEncounters():
 
-    # TODO: COMMENT.
-    if not os.path.exists(TEST_RESULTS_PATH):
-        os.makedirs(TEST_RESULTS_PATH)
-    
+    global PATH
+
+    PATH = TEST_RESULTS_PATH
+
+    if not os.path.exists(PATH):
+        os.makedirs(PATH)
+
+    if os.path.exists(PATH):
+        i = 1
+        PATH += str(i)
+        while(os.path.exists(PATH)):
+            i += 1
+        os.makedirs(PATH)
+
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
     ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries.csv', header=0)
     
@@ -192,7 +203,7 @@ def runEncounters():
 
             # Create a directory for this encounter's description and resulting path after a test.
             ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
-            ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
+            ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
             os.makedirs(ENCOUNTER_PATH)
             
             # Create a .csv file to describe this encounter
@@ -215,7 +226,7 @@ def runEncounters():
         trajectory_states = []
 
         ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
-        ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
+        ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
 
         init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
 
