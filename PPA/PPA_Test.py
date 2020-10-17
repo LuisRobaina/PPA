@@ -74,7 +74,7 @@ if __name__ == "__main__":
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)  # Count the number of rows in set of encounters.
 
     # Retrieve discretizers:
-    distance_discretizer, angle_discretizer, speed_discretizer = setUpdiscretizers()
+    distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
     # Set of StateActionQN that represent the model.
     Learned_Model = []
@@ -90,12 +90,12 @@ if __name__ == "__main__":
         outcome = constructPath(init_state, ENCOUNTER_PATH)
 
         if outcome == -1:  # Failed Path.
-            failedTests+=1
+            failedTests += 1
             print("FAILED: ", ENCOUNTER_NAME)
 
         if outcome == 0:  # Success Path:
             print("SUCCESS: ", ENCOUNTER_NAME)
-            passedTests+=1
+            passedTests += 1
 
     print("PASSED = ", passedTests)
     print("FAILED = ", failedTests)
