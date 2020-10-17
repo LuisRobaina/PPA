@@ -143,6 +143,7 @@ class MCST:
         # Last state in the MCTS path.
         simState = self.lastExpandedState.state
 
+        steps = 0
         while True:
 
             # TODO: REFACTOR USING random.choice([list]).
@@ -163,13 +164,17 @@ class MCST:
                 Q += TURN_ACTION_REWARD
             
             Q += TIME_REWARD    # Time penalty for every action.
-            
+
             # Check if this state is final.
             state_Q = isTerminalState(simState)
             if state_Q is not 0:    # Non-zero means simState is terminal (refer to isTerminalState).
                 # Compute Reward/Score and backpropagate.
                 Q += state_Q
                 break   # End simulation.
+
+            # TODO: NOT SURE ABOUT THIS...
+            if steps >= EPISODE_LENGTH:
+                break
 
             discount_factor *= GAMMA
 

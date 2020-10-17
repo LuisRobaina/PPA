@@ -27,6 +27,8 @@ MCTS_ITERATIONS = 20000
 UCB1_C = 2
 GAMMA = 0.9                     # Discount Factor.
 
+EPISODE_LENGTH = 200
+
 # Directory Paths:
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 
