@@ -13,7 +13,7 @@ LODWC_REWARD = -0.3             # Negative reward (penalty) for Lost of Well Cle
 TURN_ACTION_REWARD = -0.00001   # Negative reward (penalty) for every turn action.
 
 # Final State Constants:
-DWC_DIST = 2200;                # (ft) Well Clear distance.
+DWC_DIST = 2200                 # (ft) Well Clear distance.
 DESTINATION_DIST_ERROR = 500    # (ft) Max distance from destination consider Destination reached.
 ABANDON_STATE_ERROR = 51660     # (ft) Distance which if exceed results on an abandon state.
 
