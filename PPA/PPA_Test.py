@@ -99,7 +99,7 @@ if __name__ == "__main__":
         # Pickle the 'data' dictionary using the highest protocol available.
         Learned_Model = pickle.load(f)
 
-    for encounter_index in range(5):
+    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
         ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
         ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME

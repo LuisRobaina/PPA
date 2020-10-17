@@ -188,7 +188,7 @@ def runEncounters():
     """
         Learn from training set:
     """
-    for encounter_index in range(5):
+    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
             # Create a directory for this encounter's description and resulting path after a test.
             ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
@@ -207,7 +207,7 @@ def runEncounters():
             for actionQN in sample:
                 print(actionQN)
 
-    for encounter_index in range(5):
+    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
         global trajectory_states
         global FAILS
