@@ -188,7 +188,7 @@ def runEncounters():
     """
         Learn from training set:
     """
-    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
+    for encounter_index in range(5):
 
             # Create a directory for this encounter's description and resulting path after a test.
             ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
@@ -207,7 +207,7 @@ def runEncounters():
             for actionQN in sample:
                 print(actionQN)
 
-    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
+    for encounter_index in range(5):
 
         global trajectory_states
         global FAILS
@@ -230,14 +230,16 @@ def runEncounters():
         outcome, last_traj_state, last_model_index = constructPath(last_traj_state,
                                                                        ENCOUNTER_PATH,
                                                                        last_model_index)
+
         if outcome == -1:   # Failed Path.
-                FAILS += 1
-                # Start Learning Again...
-                # learnFromEncounter(ENCOUNTER_PATH, ENCOUNTER_MCTS[encounter_index])
+            FAILS += 1
+            # Start Learning Again...
+            # learnFromEncounter(ENCOUNTER_PATH, ENCOUNTER_MCTS[encounter_index])
 
         if outcome == 0:    # Success Path:
             print("Optimal Trajectory Found ", ENCOUNTER_NAME)
             found_traj = True
+
 
 if __name__ == "__main__":
 
@@ -245,8 +247,14 @@ if __name__ == "__main__":
     print("STATE SPACE SIZE : ", space_size_str)
 
     runEncounters()
+
     print("FAILED = ", FAILS)
 
-    with open('model.pickle', 'wb') as f:
-        # Pickle the 'data' dictionary using the highest protocol available.
-        pickle.dump(Learned_Model, f, pickle.HIGHEST_PROTOCOL)
+    # open a file, where you ant to store the data
+    file = open('model.pickle', 'wb')
+
+    # dump information to that file
+    pickle.dump(Learned_Model, file)
+
+    # close the file
+    file.close()

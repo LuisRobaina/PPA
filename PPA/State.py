@@ -8,8 +8,8 @@ import pandas as pd
 class State:
     # Define a state object type.
     def __init__(self, ownship_pos, intruder_pos, ownship_vel, intruder_vel):
-        
-        # np.arrays all.
+
+        # np.array all.
         self.ownship_pos = ownship_pos      # [x,y] (ft)
         self.intruder_pos = intruder_pos    # [x,y] (ft)
         self.ownship_vel = ownship_vel      # [v_x,v_y] (ft/sec)
@@ -170,11 +170,12 @@ def getNewState(state: State, action):
     
     # Velocity:
     if action is 'NO_TURN':
-        new_vel_own = ownship_vel # [v_x,v_y] (ft/sec).
-        new_own_pos = ownship_pos # [x,y] (ft)
+        new_vel_own = ownship_vel   # [v_x,v_y] (ft/sec).
+
+        # new_own_pos = ownship_pos # [x,y] (ft)
+
     else:
-        
-        theta = 5 # (degs).
+        theta = 5   # degs.
         cos_theta = math.cos(math.radians(theta))
         sin_theta = math.sin(math.radians(theta))
         
@@ -197,15 +198,14 @@ def getNewState(state: State, action):
     # Position:
     # For Ownship:
     avg_disp = 0.5 * (new_vel_own + ownship_vel) * TIME_INCREMENT
-    new_own_pos = state.ownship_pos + avg_disp # [x_o,y_o] (ft).
+    new_own_pos = state.ownship_pos + avg_disp  # [x_o,y_o] (ft).
     
-    # For Intruder: Intruder fligths at a constant velocity.
-    intr_vel =  np.array(state.intruder_vel)
+    # For Intruder: Intruder flights at a constant velocity.
+    intr_vel = np.array(state.intruder_vel)
     new_vel_intr = intr_vel
     intr_disp = 0.5 * (new_vel_intr + intr_vel) * TIME_INCREMENT
     new_intr_pos = state.intruder_pos + intr_disp
     
     # New state after the action.
     new_state = State(new_own_pos, new_intr_pos, new_vel_own, new_vel_intr)
-    
     return new_state

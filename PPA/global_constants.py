@@ -1,9 +1,7 @@
 import os
 
 # Algorithm's Constants:
-
-# TODO: Change to 1.
-TIME_INCREMENT = 5.0            # Seconds that each action runs for.
+TIME_INCREMENT = 1.0            # Seconds that each action runs for.
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1    # Reward for reaching the destination state.
@@ -24,9 +22,9 @@ ACTIONS = {                     # Actions are in degrees per second.
 }
 
 # TODO: Change back...
-MCTS_ITERATIONS = 10000
+MCTS_ITERATIONS = 20000
 # UCB1 Exploration term.
-UCB1_C = 4
+UCB1_C = 2
 GAMMA = 0.9                     # Discount Factor.
 
 # Directory Paths:
