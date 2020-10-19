@@ -22,7 +22,7 @@ ACTIONS = {                     # Actions are in degrees per second.
 }
 
 # TODO: Change back...
-MCTS_ITERATIONS = 10000
+MCTS_ITERATIONS = 1000
 # UCB1 Exploration term.
 UCB1_C = 4
 GAMMA = 0.9                     # Discount Factor.
