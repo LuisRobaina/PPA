@@ -5,7 +5,7 @@ class LocalState:
 
     def __init__(self, r_do, theta_do, v_do, r_io, theta_io, psi_io_nr_io ,v_i ):
         
-        self.distance_ownship_destination =  r_do
+        self.distance_ownship_destination = r_do
         self.theta_destintation_ownship = theta_do
         self.ownship_vel = v_do
         self.intruder_vel = v_i
