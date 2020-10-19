@@ -183,12 +183,12 @@ def runEncounters():
 
     if not os.path.exists(PATH):
         os.makedirs(PATH)
-
-    if os.path.exists(PATH):
+    elif os.path.exists(PATH):
         i = 1
         PATH += str(i)
-        while(os.path.exists(PATH)):
+        while (os.path.exists(PATH)):
             i += 1
+            PATH = PATH[:-1] + str(i)
         os.makedirs(PATH)
 
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.

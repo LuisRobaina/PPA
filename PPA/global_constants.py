@@ -4,7 +4,7 @@ import os
 TIME_INCREMENT = 1.0            # Seconds that each action runs for.
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
-DESTINATION_STATE_REWARD = 1    # Reward for reaching the destination state.
+DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination state.
 ABANDON_STATE_REWARD = -0.5     # Negative reward (a penalty) if state is too far from destination.
 TIME_REWARD = -0.001            # Negative reward (penalty) for every second that passes.
 LODWC_REWARD = -0.3             # Negative reward (penalty) for Lost of Well Clear.
@@ -22,7 +22,7 @@ ACTIONS = {                     # Actions are in degrees per second.
 }
 
 # TODO: Change back...
-MCTS_ITERATIONS = 20000
+MCTS_ITERATIONS = 10000
 # UCB1 Exploration term.
 UCB1_C = 4
 GAMMA = 0.9                     # Discount Factor.
