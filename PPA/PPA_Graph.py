@@ -29,8 +29,7 @@ ACTIONS = {                     # Actions are in degrees per second.
     'RIGHT': 5
 }
 
-# TODO: Change back...
-MCTS_ITERATIONS = 10000
+MCTS_ITERATIONS = 1000
 # UCB1 Exploration term.
 UCB1_C = 4
 GAMMA = 0.9                     # Discount Factor.
@@ -76,11 +75,12 @@ class State:
         """
 
 
-def getInitStateFromEncounter(encounter_directory):
+def getInitStateFromEncounter(encounter_directory, encounter_index):
     # Load an encounter description from the directory.
     ENCOUNTER_DESC = pd.read_csv(encounter_directory + '/desc.csv')
     # Convert the encounter to a dictionary.
-    encounter_properties = ENCOUNTER_DESC.to_dict().get('1')
+    i = encounter_index + 1
+    encounter_properties = ENCOUNTER_DESC.to_dict().get(str(i))
     """
     Note:
     encounter_properties is a dictionary with the following integer keys
@@ -607,11 +607,11 @@ class MCST:
         return current_state.Q
 
 # ENCOUNTER
-def learnFromEncounter(encounter_directory, mcts: MCST):
+def learnFromEncounter(encounter_directory, encounter_index,mcts: MCST):
 
         print("LEARNING  FROM ", encounter_directory)
 
-        encounter_state = getInitStateFromEncounter(encounter_directory)
+        encounter_state = getInitStateFromEncounter(encounter_directory, encounter_index)
 
         # TODO: Think about this...
         # Sanity check -- are the two aircraft's initial positions well separated
@@ -670,24 +670,19 @@ def runEncounters():
 
         # Create a .csv file to describe this encounter
         (ENCOUNTERS_GEOMETRIES.iloc[0]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
-        mcts = learnFromEncounter(ENCOUNTER_PATH, None)
+        mcts = learnFromEncounter(ENCOUNTER_PATH, encounter_index, None)
 
 
 
 outfile = open('2D-1.txt', 'w')
+
+
+
+print("****PPA GRAPH****")
+print("MCTS ITERATIONS = : ", MCTS_ITERATIONS)
+print("GAMMA : ", GAMMA)
+print("EPISODE LENGTH : ", EPISODE_LENGTH)
+print("EXPLORATION FACTOR (C) : ", UCB1_C)
+
 runEncounters()
 close(outfile)
-
-plotly.tools.set_credentials_file(username='LuisRobaina', api_key='YBFOVah6kdr27VpJ5qva')
-
-
-x, y = np.loadtxt('2d.txt', delimiter=',', unpack=True)
-
-colorscale = ['#7A4579', '#D56073', 'rgb(236,158,105)', (1, 1, 0.2), (0.98,0.98,0.98)]
-
-fig = ff.create_2d_density(
-    x, y, colorscale=colorscale,
-    hist_color='rgb(255, 237, 222)', point_size=3
-)
-
-py.iplot(fig, filename='histogram_subplots')

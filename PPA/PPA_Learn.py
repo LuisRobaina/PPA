@@ -6,7 +6,7 @@ from PPA.global_constants import *
 
 # Tests Failed
 FAILS = 0
-
+PASSED = 0
 # Set of StateActionQN that represent the model.
 Learned_Model = []
 
@@ -18,12 +18,13 @@ distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdi
 
 ENCOUNTER_MCTS = []
 
+
 # ENCOUNTER
-def learnFromEncounter(encounter_directory, mcts: MCST):
+def learnFromEncounter(encounter_directory, encounter_index,mcts: MCST):
 
     print("LEARNING  FROM ", encounter_directory)
 
-    encounter_state = getInitStateFromEncounter(encounter_directory) 
+    encounter_state = getInitStateFromEncounter(encounter_directory, encounter_index)
 
     # TODO: Think about this...
     # Sanity check -- are the two aircraft's initial positions well separated
@@ -100,7 +101,6 @@ def learnFromEncounter(encounter_directory, mcts: MCST):
 
         # print("NEW. Added to Model:", stateActionQN)
         Learned_Model.append(stateActionQN)
-        #print("Coverage % = ", (len(Learned_Model) / space_size) * 100)
 
     return mcts
 
@@ -126,8 +126,10 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
         
         # Generate model object.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
-        print("Looking for: ", model_lookup)
-        print("STATES IN MODEL:", len(Learned_Model))
+
+        # TODO: Remove Debug.
+        # print("Looking for: ", model_lookup)
+        # print("STATES IN MODEL:", len(Learned_Model))
 
         # Start checking learned model from last checked state.
         for state_in_model in Learned_Model[model_index:]:
@@ -135,7 +137,8 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
 
                 model_has_state = True
                 action = state_in_model.getBestAction()
-                print("Took action: ", action)
+
+                # print("Took action: ", action)
                 current_state = getNewState(current_state, action)
                 trajectory_states.append(current_state)
                 model_index = 0
@@ -158,7 +161,7 @@ def constructPath(last_traj_state: State, encounter_path, model_index):
     reward = isTerminalState(current_state)
 
     if reward is DESTINATION_STATE_REWARD:
-
+        print('DESTINATION_STATE')
         # Save path to csv file:
         traj = np.array([trajectory_states])
         traj.tofile(encounter_path + "/" + "Traj.csv", sep=',')
@@ -194,7 +197,7 @@ def runEncounters():
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
     ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries.csv', header=0)
     
-    NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index) # Count the number of rows in set of encounters.
+    NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)     # Count the number of rows in set of encounters.
 
     """
         Learn from training set:
@@ -207,28 +210,29 @@ def runEncounters():
             os.makedirs(ENCOUNTER_PATH)
             
             # Create a .csv file to describe this encounter
-            (ENCOUNTERS_GEOMETRIES.iloc[0]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
+            (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
             # Learn:
 
-            mcts = learnFromEncounter(ENCOUNTER_PATH, None)
+            mcts = learnFromEncounter(ENCOUNTER_PATH, encounter_index, None)
             ENCOUNTER_MCTS.append(mcts)
 
-            # TODO: remove.
-            sample = random.sample(Learned_Model, 2)
-            for actionQN in sample:
-                print(actionQN)
+            # # SAMPLE A STATE IN MODEL
+            #
+            # sample = random.sample(Learned_Model, 2)
+            # for actionQN in sample:
+            #     print(actionQN)
 
     for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
         global trajectory_states
-        global FAILS
+        global FAILS, PASSED
 
         trajectory_states = []
 
         ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
         ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
 
-        init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
+        init_state = getInitStateFromEncounter(ENCOUNTER_PATH, encounter_index)
 
         found_traj = False
         last_traj_state = init_state
@@ -249,19 +253,31 @@ def runEncounters():
 
         if outcome == 0:    # Success Path:
             print("Optimal Trajectory Found ", ENCOUNTER_NAME)
+            PASSED += 1
             found_traj = True
 
 
 if __name__ == "__main__":
 
     space_size_str = "{:e}".format(space_size)
-    print("STATE SPACE SIZE : ", space_size_str)
 
+    # Print useful information about the hyper-paramenters.
+
+    print("STATE SPACE SIZE = ", space_size_str)
+    print("MCTS ITERATIONS = : ", MCTS_ITERATIONS)
+    print("GAMMA : ", GAMMA)
+    print("EPISODE LENGTH : ", EPISODE_LENGTH)
+    print("EXPLORATION FACTOR (C) : ", UCB1_C)
+
+    # Train with the training examples.
     runEncounters()
 
+    print("Final Space Coverage % = ", (len(Learned_Model) / space_size) * 100)
     print("FAILED = ", FAILS)
+    print("PASSED = ", PASSED)
 
     # open a file, where you ant to store the data
+
     file = open('model.pickle', 'wb')
 
     # dump information to that file

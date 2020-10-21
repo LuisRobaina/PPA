@@ -27,12 +27,16 @@ class State:
         """
 
 
-def getInitStateFromEncounter(encounter_directory):
+def getInitStateFromEncounter(encounter_directory, encounter_index):
     
     # Load an encounter description from the directory.
     ENCOUNTER_DESC = pd.read_csv(encounter_directory + '/desc.csv')
     # Convert the encounter to a dictionary.
-    encounter_properties = ENCOUNTER_DESC.to_dict().get('1')
+
+    i = encounter_index + 1
+    encounter_properties = ENCOUNTER_DESC.to_dict().get(str(i))
+
+
     """
     Note:
     encounter_properties is a dictionary with the following integer keys
@@ -47,6 +51,7 @@ def getInitStateFromEncounter(encounter_directory):
 
 
 def computeInitialState(encounter_properties: dict) -> State:
+
     """
         Compute the ownship and intruder's initial states based on the encounter
         design parameters:
@@ -121,7 +126,7 @@ def computeInitialState(encounter_properties: dict) -> State:
     sin_theta_2 = 1 - cos_theta**2;
     
     if (sin_theta_2 < 0 and sin_theta_2 > -1e-15):
-        sin_theta_2 = 0; # ignore numerical impresion.
+        sin_theta_2 = 0     # ignore numerical impresion.
     
     sin_theta = math.sqrt(sin_theta_2);
 
@@ -209,3 +214,5 @@ def getNewState(state: State, action):
     # New state after the action.
     new_state = State(new_own_pos, new_intr_pos, new_vel_own, new_vel_intr)
     return new_state
+
+

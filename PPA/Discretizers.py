@@ -10,8 +10,8 @@ def setUpdiscretizers():
     range_speed = (np.array([[x for x in range(MIN_SPEED, MAX_SPEED + 1)]])).T
 
     distance_bins = 121 # len(range_distance) - 1
-    angle_bins = 72 # len(range_distance) - 1
-    speed_bins = 57 # len(range_distance) - 1
+    angle_bins = 72     # len(range_distance) - 1
+    speed_bins = 57     # len(range_distance) - 1
 
     distance_discretizer = KBinsDiscretizer(n_bins=distance_bins, encode='ordinal', strategy='uniform')
     angle_discretizer = KBinsDiscretizer(n_bins=angle_bins, encode='ordinal', strategy='uniform')
