@@ -1,8 +1,11 @@
+import matplotlib
 import matplotlib.pyplot as plt
 from scipy.stats import kde
 import numpy as np
 import argparse
 
+
+matplotlib.use('Agg')
 
 parser = argparse.ArgumentParser(description='Short sample app')
 parser.add_argument('-n', action="store", dest='file_name', default=False)

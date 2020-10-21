@@ -684,4 +684,3 @@ print("EXPLORATION FACTOR (C) : ", UCB1_C)
 print("*****************")
 
 runEncounters()
-close(outfile)
