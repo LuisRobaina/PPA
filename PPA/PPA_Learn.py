@@ -263,11 +263,13 @@ if __name__ == "__main__":
 
     # Print useful information about the hyper-paramenters.
 
+    print("****PPA TRAINING****")
     print("STATE SPACE SIZE = ", space_size_str)
     print("MCTS ITERATIONS = : ", MCTS_ITERATIONS)
     print("GAMMA : ", GAMMA)
     print("EPISODE LENGTH : ", EPISODE_LENGTH)
     print("EXPLORATION FACTOR (C) : ", UCB1_C)
+    print("********************")
 
     # Train with the training examples.
     runEncounters()

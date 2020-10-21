@@ -31,11 +31,10 @@ def getInitStateFromEncounter(encounter_directory, encounter_index):
     
     # Load an encounter description from the directory.
     ENCOUNTER_DESC = pd.read_csv(encounter_directory + '/desc.csv')
-    # Convert the encounter to a dictionary.
 
+    # Convert the encounter to a dictionary.
     i = encounter_index + 1
     encounter_properties = ENCOUNTER_DESC.to_dict().get(str(i))
-
 
     """
     Note:

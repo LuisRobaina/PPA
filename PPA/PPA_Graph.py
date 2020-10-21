@@ -78,6 +78,7 @@ class State:
 def getInitStateFromEncounter(encounter_directory, encounter_index):
     # Load an encounter description from the directory.
     ENCOUNTER_DESC = pd.read_csv(encounter_directory + '/desc.csv')
+
     # Convert the encounter to a dictionary.
     i = encounter_index + 1
     encounter_properties = ENCOUNTER_DESC.to_dict().get(str(i))
@@ -607,7 +608,7 @@ class MCST:
         return current_state.Q
 
 # ENCOUNTER
-def learnFromEncounter(encounter_directory, encounter_index,mcts: MCST):
+def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
 
         print("LEARNING  FROM ", encounter_directory)
 
@@ -669,20 +670,18 @@ def runEncounters():
         os.makedirs(ENCOUNTER_PATH)
 
         # Create a .csv file to describe this encounter
-        (ENCOUNTERS_GEOMETRIES.iloc[0]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
+        (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
         mcts = learnFromEncounter(ENCOUNTER_PATH, encounter_index, None)
 
 
-
 outfile = open('2D-1.txt', 'w')
-
-
 
 print("****PPA GRAPH****")
 print("MCTS ITERATIONS = : ", MCTS_ITERATIONS)
 print("GAMMA : ", GAMMA)
 print("EPISODE LENGTH : ", EPISODE_LENGTH)
 print("EXPLORATION FACTOR (C) : ", UCB1_C)
+print("*****************")
 
 runEncounters()
 close(outfile)
