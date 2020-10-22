@@ -34,7 +34,7 @@ MCTS_ITERATIONS = 1000
 UCB1_C = 2
 GAMMA = 0.9                     # Discount Factor.
 
-EPISODE_LENGTH = 200
+EPISODE_LENGTH = None
 
 # Directory Paths:
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
@@ -554,7 +554,7 @@ class MCST:
                 break  # End simulation.
 
             # TODO: NOT SURE ABOUT THIS...
-            if steps >= EPISODE_LENGTH:
+            if EPISODE_LENGTH is not None and steps >= EPISODE_LENGTH:
                 break
 
             discount_factor *= GAMMA
