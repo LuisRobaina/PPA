@@ -2,6 +2,7 @@ import numpy as np
 from numpy import linalg as LA
 import pandas as pd
 
+
 import os
 
 # Algorithm's Constants:
@@ -483,6 +484,7 @@ class MCST:
             self.visitedStatesPath.append(mcst_node)
 
         np.savetxt(outfile_own, [mcst_node.state.ownship_pos], delimiter=',')
+
         # np.savetxt(outfile_int, [mcst_node.state.intruder_pos], delimiter=',')
 
         return mcst_node
@@ -659,15 +661,15 @@ def runEncounters():
         Learn from training set:
     """
 
-    for encounter_index in range(1):
+    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
         # Create a directory for this encounter's description and resulting path after a test.
-        ENCOUNTER_NAME = f'ENCOUNTER_{5}'
+        ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
         ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
         os.makedirs(ENCOUNTER_PATH)
 
         # Create a .csv file to describe this encounter
-        (ENCOUNTERS_GEOMETRIES.iloc[5]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
-        mcts = learnFromEncounter(ENCOUNTER_PATH, 5, None)
+        (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
+        mcts = learnFromEncounter(ENCOUNTER_PATH, encounter_index, None)
 
 
 outfile_own = open('2D-Own.txt', 'w')
