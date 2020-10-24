@@ -12,7 +12,6 @@ parser.add_argument('-n', action="store", dest='file_name', default=False)
 
 args = parser.parse_args()
 
-# Create data: 200 points
 data = np.loadtxt(args.file_name, delimiter=',', unpack=False)
 x, y = data.T
 

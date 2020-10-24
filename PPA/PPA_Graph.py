@@ -1,15 +1,11 @@
-import plotly
-import plotly.plotly as py
-import plotly.figure_factory as ff
 import numpy as np
-import math
 from numpy import linalg as LA
 import pandas as pd
 
 import os
 
 # Algorithm's Constants:
-TIME_INCREMENT = 1.0            # Seconds that each action runs for.
+TIME_INCREMENT = 5.0            # Seconds that each action runs for.
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination state.
@@ -29,7 +25,7 @@ ACTIONS = {                     # Actions are in degrees per second.
     'RIGHT': 5
 }
 
-MCTS_ITERATIONS = 1000
+MCTS_ITERATIONS = 100000
 # UCB1 Exploration term.
 UCB1_C = 2
 GAMMA = 0.9                     # Discount Factor.
@@ -488,6 +484,9 @@ class MCST:
             # Add selected node to the Visited States Path.
             self.visitedStatesPath.append(mcst_node)
 
+        np.savetxt(outfile_own, [mcst_node.state.ownship_pos], delimiter=',')
+        # np.savetxt(outfile_int, [mcst_node.state.intruder_pos], delimiter=',')
+
         return mcst_node
 
     def expansion(self, mcst_node):
@@ -575,9 +574,7 @@ class MCST:
             mcst_state.N += 1
             # Mark it as dirty.
             mcst_state.dirty_bit = 1
-            np.savetxt(outfile, [mcst_state.state.ownship_pos], delimiter=','
-                       , fmt='%-7.2f')
-            # outfile.write(mcst_state.state.ownship_pos)
+
         # Empty statesPath for next selection round.
         self.clearStatesPath()
 
@@ -663,18 +660,20 @@ def runEncounters():
     """
         Learn from training set:
     """
-    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
+
+    for encounter_index in range(1):
         # Create a directory for this encounter's description and resulting path after a test.
-        ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
+        ENCOUNTER_NAME = f'ENCOUNTER_{38}'
         ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
         os.makedirs(ENCOUNTER_PATH)
 
         # Create a .csv file to describe this encounter
-        (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
-        mcts = learnFromEncounter(ENCOUNTER_PATH, encounter_index, None)
+        (ENCOUNTERS_GEOMETRIES.iloc[38]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
+        mcts = learnFromEncounter(ENCOUNTER_PATH, 38, None)
 
 
-outfile = open('2D-1.txt', 'w')
+outfile_own = open('2D-Own.txt', 'w')
+outfile_int = open('2D-Int.txt', 'w')
 
 print("****PPA GRAPH****")
 print("MCTS ITERATIONS = : ", MCTS_ITERATIONS)

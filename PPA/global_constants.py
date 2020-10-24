@@ -1,7 +1,7 @@
 import os
 
 # Algorithm's Constants:
-TIME_INCREMENT = 1.0            # Seconds that each action runs for.
+TIME_INCREMENT = 10.0            # Seconds that each action runs for.
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination state.
@@ -27,7 +27,7 @@ MCTS_ITERATIONS = 10000
 UCB1_C = 2
 GAMMA = 0.9                     # Discount Factor.
 
-EPISODE_LENGTH = 200
+EPISODE_LENGTH = None
 
 # Directory Paths:
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'

@@ -173,7 +173,7 @@ class MCST:
                 break   # End simulation.
 
             # TODO: NOT SURE ABOUT THIS...
-            if steps >= EPISODE_LENGTH:
+            if EPISODE_LENGTH is not None and steps >= EPISODE_LENGTH:
                 break
 
             discount_factor *= GAMMA
@@ -194,7 +194,7 @@ class MCST:
             mcst_state.N += 1
             # Mark it as dirty.
             mcst_state.dirty_bit = 1
-    
+
         # Empty statesPath for next selection round.
         self.clearStatesPath()
 

@@ -20,8 +20,7 @@ ENCOUNTER_MCTS = []
 
 
 # ENCOUNTER
-def learnFromEncounter(encounter_directory, encounter_index,mcts: MCST):
-
+def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
     print("LEARNING  FROM ", encounter_directory)
 
     encounter_state = getInitStateFromEncounter(encounter_directory, encounter_index)
@@ -45,7 +44,11 @@ def learnFromEncounter(encounter_directory, encounter_index,mcts: MCST):
         we learn something about one or more continuous state and action pairs.
     """
     for i in range(MCTS_ITERATIONS):
-
+        if i % 500 == 0:
+            result = constructPathWhileLearning(encounter_state)
+            if result == 0:
+                print("SUCCESS PATH")
+                return
         selected_state = mcts.selection()
         mcts.expansion(selected_state)
         mcts.simulate()
@@ -222,39 +225,53 @@ def runEncounters():
             # for actionQN in sample:
             #     print(actionQN)
 
-    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
-        global trajectory_states
-        global FAILS, PASSED
+def constructPathWhileLearning(initial_state: State):
 
-        trajectory_states = []
+    trajectory_states = [initial_state]
 
-        ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
-        ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
+    current_state = initial_state
 
-        init_state = getInitStateFromEncounter(ENCOUNTER_PATH, encounter_index)
+    while isTerminalState(current_state) == 0:
+        model_has_state = False
 
-        found_traj = False
-        last_traj_state = init_state
-        trajectory_states.append(init_state)
-        last_model_index = 0
+        current_local_state = convertAbsToLocal(current_state)
 
-        # while not found_traj:
+        current_discrete_local_state = discretizeLocalState(current_local_state,
+                                                            distance_discretizer,
+                                                            angle_discretizer,
+                                                            speed_discretizer)
+        # Generate model object.
+        model_lookup = StateActionQN(current_discrete_local_state, '', 0)
+        for state_in_model in Learned_Model:
+            if model_lookup == state_in_model:  # same discrete local state.
+                model_has_state = True
+                action = state_in_model.getBestAction()
+                current_state = getNewState(current_state, action)
+                trajectory_states.append(current_state)
+                break
 
-        # Try to construct path and learn.
-        outcome, last_traj_state, last_model_index = constructPath(last_traj_state,
-                                                                       ENCOUNTER_PATH,
-                                                                       last_model_index)
+        if not model_has_state:
+            print('STATE_NOT_MODELED')
+            return -1  # Path couldn't be constructed missing states in model.
 
-        if outcome == -1:   # Failed Path.
-            FAILS += 1
-            # Start Learning Again...
-            # learnFromEncounter(ENCOUNTER_PATH, ENCOUNTER_MCTS[encounter_index])
-
-        if outcome == 0:    # Success Path:
-            print("Optimal Trajectory Found ", ENCOUNTER_NAME)
-            PASSED += 1
-            found_traj = True
+    # What final state did we reach?
+    """
+        Possible final states return values: 
+        DESTINATION_STATE_REWARD: Close enough to the destination(Success!)
+        ABANDON_STATE_REWARD: Too far from destination (Fails)
+        LODWC_REWARD: Lost of well clear (Fails).
+    """
+    reward = isTerminalState(current_state)
+    if reward is DESTINATION_STATE_REWARD:
+        # Save path to csv file:
+        return 0  # Success path.
+    else:
+        if reward == ABANDON_STATE_REWARD:
+            print('ABANDON_STATE')
+        elif reward == LODWC_REWARD:
+            print('LODWC')
+        return -1  # Failed path.
 
 
 if __name__ == "__main__":
@@ -269,17 +286,15 @@ if __name__ == "__main__":
     print("GAMMA : ", GAMMA)
     print("EPISODE LENGTH : ", EPISODE_LENGTH)
     print("EXPLORATION FACTOR (C) : ", UCB1_C)
+    print("TIME INCREMENT : ", TIME_INCREMENT)
     print("********************")
 
     # Train with the training examples.
     runEncounters()
 
-    print("Final Space Coverage % = ", (len(Learned_Model) / space_size) * 100)
-    print("FAILED = ", FAILS)
-    print("PASSED = ", PASSED)
+    print("Final Space Coverage (%) = ", (len(Learned_Model) / space_size) * 100)
 
-    # open a file, where you ant to store the data
-
+    # open a file, where you want to store the data
     file = open('model.pickle', 'wb')
 
     # dump information to that file

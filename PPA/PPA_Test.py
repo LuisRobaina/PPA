@@ -6,6 +6,7 @@ import pandas as pd
 import csv
 import pickle
 
+
 def constructPath(initial_state: State, encounter_path):
 
     print("TRAJ FOR:", encounter_path)
@@ -38,7 +39,7 @@ def constructPath(initial_state: State, encounter_path):
         
         if not model_has_state:
             print('STATE_NOT_MODELED')
-            writeTraj(encounter_path,trajectory_states)
+            writeTraj(encounter_path, trajectory_states)
             return -1   # Path couldn't be constructed missing states in model.
     
     # What final state did we reach?
@@ -104,7 +105,7 @@ if __name__ == "__main__":
         ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
         ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
 
-        init_state = getInitStateFromEncounter(ENCOUNTER_PATH)
+        init_state = getInitStateFromEncounter(ENCOUNTER_PATH, encounter_index)
 
         # Try to construct path and learn.
         outcome = constructPath(init_state, ENCOUNTER_PATH)
