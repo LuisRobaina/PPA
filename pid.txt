@@ -1,1 +1,4 @@
-7970
+[1]  + 13974 Suspended                     python3 graph_density.py -n 2D-1.txt
+[2]  -  1828 Running                       python3 -u -m PPA.PPA_Learn > test.txt
+[3]     1909 Running                       python3 -u -m PPA.PPA_Graph > graph_test.txt
+[1]  + 10052 Running                       python3 -u -m PPA.PPA_Graph > graph_test.txt
