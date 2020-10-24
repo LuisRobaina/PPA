@@ -108,78 +108,6 @@ def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
     return mcts
 
 
-def constructPath(last_traj_state: State, encounter_path, model_index):
-
-    global trajectory_states
-
-    print("CONSTRUCTING TRAJ FOR:", encounter_path)
-
-    current_state = last_traj_state
-
-    while isTerminalState(current_state) == 0:
-
-        model_has_state = False
-        
-        current_local_state = convertAbsToLocal(current_state)
-    
-        current_discrete_local_state = discretizeLocalState(current_local_state, 
-                                                            distance_discretizer, 
-                                                            angle_discretizer, 
-                                                            speed_discretizer)
-        
-        # Generate model object.
-        model_lookup = StateActionQN(current_discrete_local_state, '', 0)
-
-        # TODO: Remove Debug.
-        # print("Looking for: ", model_lookup)
-        # print("STATES IN MODEL:", len(Learned_Model))
-
-        # Start checking learned model from last checked state.
-        for state_in_model in Learned_Model[model_index:]:
-            if state_in_model == model_lookup:  # Same discrete local state.
-
-                model_has_state = True
-                action = state_in_model.getBestAction()
-
-                # print("Took action: ", action)
-                current_state = getNewState(current_state, action)
-                trajectory_states.append(current_state)
-                model_index = 0
-                break
-
-        if not model_has_state:
-            # TODO: REMOVE.
-            print('STATE_NOT_MODELED')
-            return -1, current_state, len(Learned_Model)-1  # Path couldn't be constructed: Missing state in the model.
-
-    """
-        What final state did we reach?
-        
-        Possible final states return values: 
-        DESTINATION_STATE_REWARD: Close enough to the destination(Success!)
-        ABANDON_STATE_REWARD: Too far from destination (Fails)
-        LODWC_REWARD: Lost of well clear (Fails)
-        
-    """
-    reward = isTerminalState(current_state)
-
-    if reward is DESTINATION_STATE_REWARD:
-        print('DESTINATION_STATE')
-        # Save path to csv file:
-        traj = np.array([trajectory_states])
-        traj.tofile(encounter_path + "/" + "Traj.csv", sep=',')
-        trajectory_states = []
-        return 0, current_state, 0  # Success path.
-
-    else:
-        if reward == ABANDON_STATE_REWARD:
-            print('ABANDON_STATE')
-        elif reward == LODWC_REWARD:
-            print('LODWC')
-        trajectory_states = []
-        return -1, current_state, 0  # Failed path.
-
-
 # TODO: COMMENT.
 def runEncounters():
 
@@ -198,7 +126,7 @@ def runEncounters():
         os.makedirs(PATH)
 
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
-    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries.csv', header=0)
+    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries2.csv', header = 0)
     
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)     # Count the number of rows in set of encounters.
 
