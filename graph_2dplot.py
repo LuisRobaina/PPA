@@ -24,9 +24,12 @@ if args.int is not None:
     x = np.concatenate((x, x_i), axis=None)
     y = np.concatenate((y, y_i), axis=None)
 
-plt.scatter(x, y, c=colors)
+plt.xticks(np.arange(min(x), max(x)+1, 500.0))
+
 plt.ylim(-21000, 5)
-plt.savefig('scatter.png')
+plt.scatter(x, y, c=colors)
+
+plt.savefig('2Dscatter.png')
 
 
 

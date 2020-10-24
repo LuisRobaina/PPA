@@ -2,6 +2,7 @@ import numpy as np
 from numpy import linalg as LA
 import pandas as pd
 
+
 import os
 
 # Algorithm's Constants:
@@ -25,7 +26,7 @@ ACTIONS = {                     # Actions are in degrees per second.
     'RIGHT': 5
 }
 
-MCTS_ITERATIONS = 100000
+MCTS_ITERATIONS = 10000
 # UCB1 Exploration term.
 UCB1_C = 2
 GAMMA = 0.9                     # Discount Factor.
@@ -75,9 +76,7 @@ def getInitStateFromEncounter(encounter_directory, encounter_index):
     # Load an encounter description from the directory.
     ENCOUNTER_DESC = pd.read_csv(encounter_directory + '/desc.csv')
 
-    # Convert the encounter to a dictionary.
-    i = encounter_index + 1
-    encounter_properties = ENCOUNTER_DESC.to_dict().get(str(i))
+    encounter_properties = ENCOUNTER_DESC.to_dict().get(str(encounter_index))
     """
     Note:
     encounter_properties is a dictionary with the following integer keys
@@ -485,6 +484,7 @@ class MCST:
             self.visitedStatesPath.append(mcst_node)
 
         np.savetxt(outfile_own, [mcst_node.state.ownship_pos], delimiter=',')
+
         # np.savetxt(outfile_int, [mcst_node.state.intruder_pos], delimiter=',')
 
         return mcst_node
@@ -653,7 +653,7 @@ def runEncounters():
         os.makedirs(PATH)
 
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
-    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries.csv', header=0)
+    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries2.csv', header=0)
 
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)  # Count the number of rows in set of encounters.
 
@@ -661,15 +661,15 @@ def runEncounters():
         Learn from training set:
     """
 
-    for encounter_index in range(1):
+    for encounter_index in range(NUMBER_OF_ENCOUNTERS):
         # Create a directory for this encounter's description and resulting path after a test.
-        ENCOUNTER_NAME = f'ENCOUNTER_{38}'
+        ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
         ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
         os.makedirs(ENCOUNTER_PATH)
 
         # Create a .csv file to describe this encounter
-        (ENCOUNTERS_GEOMETRIES.iloc[38]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
-        mcts = learnFromEncounter(ENCOUNTER_PATH, 38, None)
+        (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
+        mcts = learnFromEncounter(ENCOUNTER_PATH, encounter_index, None)
 
 
 outfile_own = open('2D-Own.txt', 'w')

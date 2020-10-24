@@ -33,8 +33,7 @@ def getInitStateFromEncounter(encounter_directory, encounter_index):
     ENCOUNTER_DESC = pd.read_csv(encounter_directory + '/desc.csv')
 
     # Convert the encounter to a dictionary.
-    i = encounter_index + 1
-    encounter_properties = ENCOUNTER_DESC.to_dict().get(str(i))
+    encounter_properties = ENCOUNTER_DESC.to_dict().get(str(encounter_index))
 
     """
     Note:
@@ -175,8 +174,6 @@ def getNewState(state: State, action):
     # Velocity:
     if action is 'NO_TURN':
         new_vel_own = ownship_vel   # [v_x,v_y] (ft/sec).
-
-        # new_own_pos = ownship_pos # [x,y] (ft)
 
     else:
         theta = 5   # degs.

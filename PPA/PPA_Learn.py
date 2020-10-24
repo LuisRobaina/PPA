@@ -17,10 +17,13 @@ trajectory_states = []
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
 ENCOUNTER_MCTS = []
-
+last_model_index = 0
 
 # ENCOUNTER
 def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
+
+    global last_model_index
+
     print("LEARNING  FROM ", encounter_directory)
 
     encounter_state = getInitStateFromEncounter(encounter_directory, encounter_index)
@@ -43,49 +46,54 @@ def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
         For each iteration of the SELECT, EXPAND, and SIMULATE procedure
         we learn something about one or more continuous state and action pairs.
     """
+
     for i in range(MCTS_ITERATIONS):
-        if i % 500 == 0:
-            result = constructPathWhileLearning(encounter_state)
+
+        if i != 0 and i % 500 == 0:
+            print("Starting: ", last_model_index)
+            # Empty the set of (state, action, reward):
+            mcts.state_action_reward = []
+            # Get State,Action,Rewards for states that updated.
+            mcts.getStateActionRewards(mcts.root)
+            addModelObjects(mcts)
+            print("MODELED: ", len(Learned_Model))
+            result = constructPathWhileLearning(encounter_state, last_model_index)
+
             if result == 0:
                 print("SUCCESS PATH")
                 return
+
+            last_model_index = len(Learned_Model)
+
         selected_state = mcts.selection()
         mcts.expansion(selected_state)
         mcts.simulate()
 
-    """
-        Iterate the (state,action,reward) tuples learned starting from
-        this encounter and convert the states to local coordinates to generate 
-        (local_state,action,reward) tuples.
-    """
+    print("-----------------------------------")
+    last_model_index = 0
 
-    # Empty the set of (state, action, reward):
-    mcts.state_action_reward = []
-    # Get State Action Rewards for states that updated.
-    mcts.getStateActionRewards(mcts.root)
+    return mcts
 
-    # print("UPDATED/LEARNED ABOUT :", len(mcts.state_action_reward))
+def addModelObjects(mcts):
 
     # The set of state,action,rewards that it learnt from this encounter iteration.
     for state, action, reward in mcts.state_action_reward:
-
         if reward == 0:
             # Non expanded child.
             continue
-
         already_in_model = False
 
         # Convert to a local state.
         localstate = convertAbsToLocal(state)
         # Discretize the local state.
-        discrete_local_state = discretizeLocalState(localstate, 
-                                                    distance_discretizer, 
-                                                    angle_discretizer, 
+        discrete_local_state = discretizeLocalState(localstate,
+                                                    distance_discretizer,
+                                                    angle_discretizer,
                                                     speed_discretizer)
         # Generate model object.
         # print("Creating stateActionQN w: ", reward)
         stateActionQN = StateActionQN(discrete_local_state, action, reward)
-        
+
         for state_in_model in Learned_Model:
             # Check the model in memory:
             if state_in_model == stateActionQN:
@@ -105,81 +113,6 @@ def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
         # print("NEW. Added to Model:", stateActionQN)
         Learned_Model.append(stateActionQN)
 
-    return mcts
-
-
-def constructPath(last_traj_state: State, encounter_path, model_index):
-
-    global trajectory_states
-
-    print("CONSTRUCTING TRAJ FOR:", encounter_path)
-
-    current_state = last_traj_state
-
-    while isTerminalState(current_state) == 0:
-
-        model_has_state = False
-        
-        current_local_state = convertAbsToLocal(current_state)
-    
-        current_discrete_local_state = discretizeLocalState(current_local_state, 
-                                                            distance_discretizer, 
-                                                            angle_discretizer, 
-                                                            speed_discretizer)
-        
-        # Generate model object.
-        model_lookup = StateActionQN(current_discrete_local_state, '', 0)
-
-        # TODO: Remove Debug.
-        # print("Looking for: ", model_lookup)
-        # print("STATES IN MODEL:", len(Learned_Model))
-
-        # Start checking learned model from last checked state.
-        for state_in_model in Learned_Model[model_index:]:
-            if state_in_model == model_lookup:  # Same discrete local state.
-
-                model_has_state = True
-                action = state_in_model.getBestAction()
-
-                # print("Took action: ", action)
-                current_state = getNewState(current_state, action)
-                trajectory_states.append(current_state)
-                model_index = 0
-                break
-
-        if not model_has_state:
-            # TODO: REMOVE.
-            print('STATE_NOT_MODELED')
-            return -1, current_state, len(Learned_Model)-1  # Path couldn't be constructed: Missing state in the model.
-
-    """
-        What final state did we reach?
-        
-        Possible final states return values: 
-        DESTINATION_STATE_REWARD: Close enough to the destination(Success!)
-        ABANDON_STATE_REWARD: Too far from destination (Fails)
-        LODWC_REWARD: Lost of well clear (Fails)
-        
-    """
-    reward = isTerminalState(current_state)
-
-    if reward is DESTINATION_STATE_REWARD:
-        print('DESTINATION_STATE')
-        # Save path to csv file:
-        traj = np.array([trajectory_states])
-        traj.tofile(encounter_path + "/" + "Traj.csv", sep=',')
-        trajectory_states = []
-        return 0, current_state, 0  # Success path.
-
-    else:
-        if reward == ABANDON_STATE_REWARD:
-            print('ABANDON_STATE')
-        elif reward == LODWC_REWARD:
-            print('LODWC')
-        trajectory_states = []
-        return -1, current_state, 0  # Failed path.
-
-
 # TODO: COMMENT.
 def runEncounters():
 
@@ -198,7 +131,7 @@ def runEncounters():
         os.makedirs(PATH)
 
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
-    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries.csv', header=0)
+    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries2.csv', header = 0)
     
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)     # Count the number of rows in set of encounters.
 
@@ -217,16 +150,10 @@ def runEncounters():
             # Learn:
 
             mcts = learnFromEncounter(ENCOUNTER_PATH, encounter_index, None)
-            ENCOUNTER_MCTS.append(mcts)
-
-            # # SAMPLE A STATE IN MODEL
-            #
-            # sample = random.sample(Learned_Model, 2)
-            # for actionQN in sample:
-            #     print(actionQN)
 
 
-def constructPathWhileLearning(initial_state: State):
+
+def constructPathWhileLearning(initial_state: State, last_model_index):
 
     trajectory_states = [initial_state]
 
@@ -243,7 +170,7 @@ def constructPathWhileLearning(initial_state: State):
                                                             speed_discretizer)
         # Generate model object.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
-        for state_in_model in Learned_Model:
+        for state_in_model in Learned_Model[last_model_index:]:
             if model_lookup == state_in_model:  # same discrete local state.
                 model_has_state = True
                 action = state_in_model.getBestAction()
