@@ -31,5 +31,3 @@ plt.scatter(x, y, c=colors)
 
 plt.savefig('2Dscatter.png')
 
-
-
