@@ -9,4 +9,5 @@ args = parser.parse_args()
 
 for i in range(int(args.count)):
     path = f'''{args.path}/ENCOUNTER_{i}/Traj.csv'''
-    os.remove(path)
+    if os.path.exists(path):
+        os.remove(path)

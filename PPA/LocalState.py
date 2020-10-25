@@ -38,7 +38,7 @@ class LocalState:
 
 def convertAbsToLocal(absolute_encounter):
     """
-    Given an absolute state convert it to a local state.
+    Given an absolute state s, convert s to a local state.
     """
     ownship_pos = np.array(absolute_encounter.ownship_pos)
     intruder_pos = np.array(absolute_encounter.intruder_pos)
@@ -46,12 +46,13 @@ def convertAbsToLocal(absolute_encounter):
     ownship_vel = np.array(absolute_encounter.ownship_vel)
     intruder_vel = np.array(absolute_encounter.intruder_vel)
     
-    # Distance to the destination (ownship)
+    # Distance to the destination (ownship).
     destination = np.array(DESTINATION_STATE)
     dest_ownship_vector = destination - ownship_pos                 # [0,0] - [ownship_x, ownship_y].
     distance_ownship_destination = LA.norm(dest_ownship_vector)     # distance to the destination at [0,0].
-    
-    theta_destintation_ownship = math.degrees(math.atan2(dest_ownship_vector[1],dest_ownship_vector[1]))
+
+    # atan2(y,x).
+    theta_destintation_ownship = math.degrees(math.atan2(dest_ownship_vector[1], dest_ownship_vector[0]))
     
     psi_o = math.degrees(math.atan2(ownship_vel[0], ownship_vel[1])) # ownship vel w.r.t y axis.
      

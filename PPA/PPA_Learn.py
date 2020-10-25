@@ -74,6 +74,7 @@ def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
 
     return mcts
 
+
 def addModelObjects(mcts):
 
     # The set of state,action,rewards that it learnt from this encounter iteration.

@@ -87,7 +87,7 @@ if __name__ == "__main__":
     passedTests = 0
 
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
-    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries.csv', header = 0)
+    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries.csv', header=0)
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)  # Count the number of rows in set of encounters.
 
     # Retrieve discretizers:
@@ -104,10 +104,10 @@ if __name__ == "__main__":
 
         ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
         ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
+        print(ENCOUNTER_PATH)
+        init_state = getInitStateFromEncounter(ENCOUNTER_PATH, encounter_index+1)
 
-        init_state = getInitStateFromEncounter(ENCOUNTER_PATH, encounter_index)
-
-        # Try to construct path and learn.
+        # Try to construct path.
         outcome = constructPath(init_state, ENCOUNTER_PATH)
 
         if outcome == -1:  # Failed Path.
