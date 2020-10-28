@@ -12,8 +12,11 @@ TURN_ACTION_REWARD = -0.00001   # Negative reward (penalty) for every turn actio
 
 # Final State Constants:
 DWC_DIST = 2200                 # (ft) Well Clear distance.
-DESTINATION_DIST_ERROR = 500    # (ft) Max distance from destination consider Destination reached.
-ABANDON_STATE_ERROR = 51660     # (ft) Distance which if exceed results on an abandon state.
+
+DESTINATION_DIST_ERROR = 500    # (ft) Max distance from the destination considered Destination Reached.
+
+# Prev value = 51660
+ABANDON_STATE_ERROR = 30000     # (ft) Distance which if exceed results on an abandon state.
 
 ACTIONS = {                     # Actions are in degrees per second.
     'LEFT': -5,

@@ -61,7 +61,7 @@ def convertAbsToLocal(absolute_encounter):
     intruder_pos_relative_ownship = intruder_pos - ownship_pos
     distance_intruder_ownship = LA.norm(intruder_pos_relative_ownship)
     
-    # ntruder angle w.r.t y axis.
+    # intruder angle w.r.t y axis.
     theta_int_own_orig = math.degrees(math.atan2(intruder_pos_relative_ownship[0], intruder_pos_relative_ownship[1]))
     theta_intruder_own_track = theta_int_own_orig - psi_o # angle of the intruder pos w.r.t ownship's ground track.
     

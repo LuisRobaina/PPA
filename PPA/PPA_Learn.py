@@ -4,20 +4,21 @@ import pickle
 from PPA.State import *
 from PPA.global_constants import *
 
-# Tests Failed
-FAILS = 0
-PASSED = 0
-# Set of StateActionQN that represent the model.
+
+# Set of StateActionQN obejects that represent the learned model.
 Learned_Model = []
 
 # Trajectory recommended for a given encounter.
 trajectory_states = []
 
-# Retrieve discretizers:
+# Retrieve discretizers.
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
-ENCOUNTER_MCTS = []
 last_model_index = 0
+
+TRAINING_NUMBER = 0
+
+TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
 
 # ENCOUNTER
 def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
@@ -48,91 +49,97 @@ def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
     """
 
     for i in range(MCTS_ITERATIONS):
-
-        if i != 0 and i % 500 == 0:
-            print("Starting: ", last_model_index)
+        # Try to construct path every 1000 iterations, avoid over-fitting.
+        if i != 0 and i % 1000 == 0:
             # Empty the set of (state, action, reward):
             mcts.state_action_reward = []
             # Get State,Action,Rewards for states that updated.
             mcts.getStateActionRewards(mcts.root)
             addModelObjects(mcts)
             print("MODELED: ", len(Learned_Model))
+            # Try to construct a path.
             result = constructPathWhileLearning(encounter_state, last_model_index)
-
             if result == 0:
                 print("SUCCESS PATH")
                 return
 
             last_model_index = len(Learned_Model)
 
+        # Run MCTS steps.
         selected_state = mcts.selection()
         mcts.expansion(selected_state)
         mcts.simulate()
 
-    print("-----------------------------------")
     last_model_index = 0
-
     return mcts
 
 
 def addModelObjects(mcts):
+    """
+    :param mcts:
+    :return:
+    """
 
-    # The set of state,action,rewards that it learnt from this encounter iteration.
+    # The set of state,action,rewards that agent learnt from this encounter's iteration.
     for state, action, reward in mcts.state_action_reward:
+
         if reward == 0:
-            # Non expanded child.
+            # This is a non expanded child - No knowledge about its Q value.
             continue
+
+        # Assume the state,action pair in not modeled.
         already_in_model = False
 
-        # Convert to a local state.
+        # Convert state to a local state.
         localstate = convertAbsToLocal(state)
-        # Discretize the local state.
+        # Discretize the resulting local state.
         discrete_local_state = discretizeLocalState(localstate,
                                                     distance_discretizer,
                                                     angle_discretizer,
                                                     speed_discretizer)
-        # Generate model object.
-        # print("Creating stateActionQN w: ", reward)
+        # Generate a discrete model object.
         stateActionQN = StateActionQN(discrete_local_state, action, reward)
 
         for state_in_model in Learned_Model:
-            # Check the model in memory:
+            # Check the model object is currently in memory:
             if state_in_model == stateActionQN:
                 """
                     This discrete local state already
                     exists in our model: Update our 
-                    knowledge about it.
+                    knowledge about its Q value via average.
                 """
                 state_in_model.update(action, reward)
                 already_in_model = True
                 break
 
         if already_in_model is True:
-            # print("Updated:", stateActionQN)
             continue
-
-        # print("NEW. Added to Model:", stateActionQN)
         Learned_Model.append(stateActionQN)
 
-# TODO: COMMENT.
-def runEncounters():
 
-    global PATH
+def runEncounters():
+    """
+    :return:
+    """
+
+    global PATH, TRAINING_NUMBER
 
     PATH = TEST_RESULTS_PATH
 
+    # Create a directory for the Training encounters.
     if not os.path.exists(PATH):
         os.makedirs(PATH)
     elif os.path.exists(PATH):
         i = 1
         PATH += str(i)
-        while (os.path.exists(PATH)):
+        while os.path.exists(PATH):
             i += 1
             PATH = PATH[:-1] + str(i)
         os.makedirs(PATH)
+        TRAINING_NUMBER = i
 
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
-    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries2.csv', header = 0)
+    ENCOUNTERS_GEOMETRIES = pd.read_csv(TRAINING_SET, header=0)
     
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)     # Count the number of rows in set of encounters.
 
@@ -141,7 +148,7 @@ def runEncounters():
     """
     for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
-            # Create a directory for this encounter's description and resulting path after a test.
+            # Create a directory for this encounter's description and resulting path after a model test`.
             ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
             ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
             os.makedirs(ENCOUNTER_PATH)
@@ -153,9 +160,12 @@ def runEncounters():
             mcts = learnFromEncounter(ENCOUNTER_PATH, encounter_index, None)
 
 
-
 def constructPathWhileLearning(initial_state: State, last_model_index):
-
+    """
+    :param initial_state:
+    :param last_model_index:
+    :return:
+    """
     trajectory_states = [initial_state]
 
     current_state = initial_state
@@ -180,11 +190,9 @@ def constructPathWhileLearning(initial_state: State, last_model_index):
                 break
 
         if not model_has_state:
-            print('STATE_NOT_MODELED')
-            return -1  # Path couldn't be constructed missing states in model.
-
-    # What final state did we reach?
+            return -1  # Valid trajectory couldn't be constructed: missing states in model.
     """
+        What final state did the agent reached?
         Possible final states return values: 
         DESTINATION_STATE_REWARD: Close enough to the destination(Success!)
         ABANDON_STATE_REWARD: Too far from destination (Fails)
@@ -192,38 +200,43 @@ def constructPathWhileLearning(initial_state: State, last_model_index):
     """
     reward = isTerminalState(current_state)
     if reward is DESTINATION_STATE_REWARD:
-        # Save path to csv file:
-        return 0  # Success path.
+        return 0  # Success: A valid trajectory was found.
+
     else:
         if reward == ABANDON_STATE_REWARD:
             print('ABANDON_STATE')
         elif reward == LODWC_REWARD:
             print('LODWC')
-        return -1  # Failed path.
+        return -1  # Failed: A valid trajectory couldn't be constructed.
 
 
 if __name__ == "__main__":
 
     space_size_str = "{:e}".format(space_size)
 
-    # Print useful information about the hyper-paramenters.
+    # Print useful information about the hyper-parameters.
 
-    print("****PPA TRAINING****")
-    print("STATE SPACE SIZE = ", space_size_str)
-    print("MCTS ITERATIONS = : ", MCTS_ITERATIONS)
-    print("GAMMA : ", GAMMA)
-    print("EPISODE LENGTH : ", EPISODE_LENGTH)
-    print("EXPLORATION FACTOR (C) : ", UCB1_C)
-    print("TIME INCREMENT : ", TIME_INCREMENT)
-    print("********************")
+    info_str = f'''
+        ****PPA TRAINING****
+            STATE SPACE SIZE = {space_size_str}
+            # MCTS ITERATIONS = {MCTS_ITERATIONS} 
+            GAMMA = {GAMMA}
+            EPISODE LENGTH = {EPISODE_LENGTH}
+            EXPLORATION FACTOR (C) = {UCB1_C}
+            TIME INCREMENT = {TIME_INCREMENT}
+            TRAINING SET = {TRAINING_SET}
+        ********************
+    '''
+    print(info_str)
 
     # Train with the training examples.
     runEncounters()
 
-    print("Final Space Coverage (%) = ", (len(Learned_Model) / space_size) * 100)
+    print("Final State Space Coverage (%) = ", (len(Learned_Model) / space_size) * 100)
 
     # open a file, where you want to store the data
-    file = open('model.pickle', 'wb')
+    model_str = f'model-{TRAINING_NUMBER}.pickle'
+    file = open(model_str, 'wb')
 
     # dump information to that file
     pickle.dump(Learned_Model, file)
