@@ -33,6 +33,7 @@ GAMMA = 0.9                     # Discount Factor.
 EPISODE_LENGTH = None
 
 # Directory Paths:
+TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 
 # Conversion Factors:

@@ -18,8 +18,6 @@ last_model_index = 0
 
 TRAINING_NUMBER = 0
 
-TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
-
 # ENCOUNTER
 def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
 
