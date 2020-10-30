@@ -1,7 +1,7 @@
 import os
 
 # Algorithm's Constants:
-TIME_INCREMENT = 5.0            # Seconds that each action runs for.
+TIME_INCREMENT = 10.0            # Seconds that each action runs for.
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination state.
@@ -33,6 +33,7 @@ GAMMA = 0.9                     # Discount Factor.
 EPISODE_LENGTH = None
 
 # Directory Paths:
+TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 
 # Conversion Factors:
