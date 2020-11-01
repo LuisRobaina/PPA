@@ -25,7 +25,7 @@ ACTIONS = {                     # Actions are in degrees per second.
 }
 
 # TODO: Change back...
-MCTS_ITERATIONS = 10000
+MCTS_ITERATIONS = 5000
 # UCB1 Exploration term.
 UCB1_C = 2
 GAMMA = 0.9                     # Discount Factor.
@@ -33,6 +33,7 @@ GAMMA = 0.9                     # Discount Factor.
 EPISODE_LENGTH = None
 
 # Directory Paths:
+TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 
 # Conversion Factors:
