@@ -6,7 +6,6 @@ import pandas as pd
 import csv
 import pickle
 
-
 def constructPath(initial_state: State, encounter_path):
 
     print("TRAJ FOR:", encounter_path)
@@ -32,7 +31,7 @@ def constructPath(initial_state: State, encounter_path):
                 action = state_in_model.getBestAction()
                 # print("BEF: ", current_state)
                 print("TOOK ACTION: ", action)
-                current_state = getNewState(current_state, action)
+                current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)
                 # print("AFT: ", current_state)
                 trajectory_states.append(current_state)
                 break
@@ -55,9 +54,7 @@ def constructPath(initial_state: State, encounter_path):
         writeTraj(encounter_path, trajectory_states)
         return 0    # Success path.
     else:
-
         writeTraj(encounter_path, trajectory_states)
-
         if reward == ABANDON_STATE_REWARD:
             print('ABANDON_STATE')
         elif reward == LODWC_REWARD:
@@ -81,14 +78,50 @@ def writeTraj(encounter_path, trajectory_states):
 
 if __name__ == "__main__":
 
-    assert(os.path.exists(TEST_RESULTS_PATH))
+    options_prompt = f"""
+    ************************************************************************************************
+    ENCOUNTER_DIR : Path to the set of Encounters to test the model on. (csv file).
+    MODEL_DIR: Path to the model pickle file.
+    RESULTS_DIR: Path to the directory to store results for each encounter.
+    ************************************************************************************************
+    """
+    print(options_prompt)
+    ENCOUNTER_DIR = input("ENCOUNTER_DIR: ")
+    while True:
+        try:
+            assert(os.path.exists(ENCOUNTER_DIR))
+            break
+        except AssertionError as e:
+            print("INVALID ENCOUNTER_DIR.")
+            ENCOUNTER_DIR = input("ENCOUNTER_DIR: ")
 
+    MODEL_DIR = input("MODEL_DIR: ")
+
+    while True:
+        try:
+            assert(os.path.exists(MODEL_DIR))
+            break
+        except AssertionError as e:
+            print("INVALID MODEL_DIR.")
+            MODEL_DIR = input("MODEL_DIR: ")
+
+    RESULTS_DIR = input("RESULTS_DIR: ")
+    while True:
+        try:
+            assert(os.path.exists(RESULTS_DIR))
+            break
+        except AssertionError as e:
+            print("INVALID RESULTS_DIR.")
+            RESULTS_DIR = input("RESULTS_DIR: ")
+
+    # Test performance counters.
     failedTests = 0
     passedTests = 0
-
+    SUCCESS_LIST= []
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
-    ENCOUNTERS_GEOMETRIES = pd.read_csv('PPA/Training Encounters/Test_Encounter_Geometries.csv', header=0)
+    ENCOUNTERS_GEOMETRIES = pd.read_csv(ENCOUNTER_DIR, header=0)
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)  # Count the number of rows in set of encounters.
+    print("Testing on ", NUMBER_OF_ENCOUNTERS, " encounters.")
 
     # Retrieve discretizers:
     distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
@@ -96,14 +129,15 @@ if __name__ == "__main__":
     # Set of StateActionQN that represent the model.
     Learned_Model = []
 
-    with open('model.pickle', 'rb') as f:
+    with open(MODEL_DIR, 'rb') as f:
         # Pickle the 'data' dictionary using the highest protocol available.
         Learned_Model = pickle.load(f)
+    print("MODEL SIZE: ", len(Learned_Model))
 
     for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
         ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
-        ENCOUNTER_PATH = TEST_RESULTS_PATH + '/' + ENCOUNTER_NAME
+        ENCOUNTER_PATH = RESULTS_DIR + '/' + ENCOUNTER_NAME
         print(ENCOUNTER_PATH)
         init_state = getInitStateFromEncounter(ENCOUNTER_PATH, encounter_index+1)
 
@@ -116,8 +150,10 @@ if __name__ == "__main__":
 
         if outcome == 0:  # Success Path:
             print("SUCCESS: ", ENCOUNTER_NAME)
+            SUCCESS_LIST.append(encounter_index)
             passedTests += 1
 
     print("PASSED = ", passedTests)
+    print("LIST OF SUCCESS: ", SUCCESS_LIST)
     print("FAILED = ", failedTests)
 

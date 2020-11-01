@@ -57,7 +57,7 @@ class StateActionQN:
                 current_avg = self.NO_TURN_Q
                 new_avg = current_avg + ((New_Q - current_avg)/(self.N+1))
                 self.NO_TURN_Q = new_avg
-                
+        # Update number of visits to this StateActionQN object.
         self.N += 1
     
     def __str__(self):

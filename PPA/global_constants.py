@@ -1,7 +1,8 @@
 import os
 
 # Algorithm's Constants:
-TIME_INCREMENT = 10.0            # Seconds that each action runs for.
+TIME_INCREMENT = 10.0 # Seconds that each action runs for.
+TEST_TIME_INCREMENT = 1 # ....
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination state.

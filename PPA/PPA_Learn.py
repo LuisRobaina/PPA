@@ -5,7 +5,7 @@ from PPA.State import *
 from PPA.global_constants import *
 
 
-# Set of StateActionQN obejects that represent the learned model.
+# Set of StateActionQN objects that represent the learned model.
 Learned_Model = []
 
 # Trajectory recommended for a given encounter.
@@ -47,20 +47,23 @@ def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
     """
 
     for i in range(MCTS_ITERATIONS):
-        # Try to construct path every 1000 iterations, avoid over-fitting.
+
+        # Try to construct path every 1000 iterations of MCTS: avoid over-fitting.
         if i != 0 and i % 1000 == 0:
+
             # Empty the set of (state, action, reward):
             mcts.state_action_reward = []
-            # Get State,Action,Rewards for states that updated.
+            # Get State,Action,Rewards for states that updated in the last 1000 iterations.
             mcts.getStateActionRewards(mcts.root)
+            # Add/Update model objects.
             addModelObjects(mcts)
+            # TODO: REMOVE LOG.
             print("MODELED: ", len(Learned_Model))
             # Try to construct a path.
             result = constructPathWhileLearning(encounter_state, last_model_index)
             if result == 0:
                 print("SUCCESS PATH")
                 return
-
             last_model_index = len(Learned_Model)
 
         # Run MCTS steps.
@@ -104,7 +107,7 @@ def addModelObjects(mcts):
                 """
                     This discrete local state already
                     exists in our model: Update our 
-                    knowledge about its Q value via average.
+                    knowledge about its Q value by averaging.
                 """
                 state_in_model.update(action, reward)
                 already_in_model = True
@@ -112,6 +115,7 @@ def addModelObjects(mcts):
 
         if already_in_model is True:
             continue
+        # Add new Model Object.
         Learned_Model.append(stateActionQN)
 
 
@@ -183,7 +187,7 @@ def constructPathWhileLearning(initial_state: State, last_model_index):
             if model_lookup == state_in_model:  # same discrete local state.
                 model_has_state = True
                 action = state_in_model.getBestAction()
-                current_state = getNewState(current_state, action)
+                current_state = getNewState(current_state, action, TIME_INCREMENT)
                 trajectory_states.append(current_state)
                 break
 

@@ -116,19 +116,19 @@ class MCST:
             rand_num = random.random()
             if rand_num < 0.33 and mcst_node.no_turn is None:
                 # Expand to the no_turn state.                              
-                new_state = getNewState(mcst_node.state, 'NO_TURN')
+                new_state = getNewState(mcst_node.state, 'NO_TURN', TIME_INCREMENT)
                 mcst_node.no_turn = MCST_State(new_state)
                 self.lastExpandedState = mcst_node.no_turn                     
                 break
             elif rand_num < 0.66 and mcst_node.turn_left is None:
                 # Expand to the turn_left state.
-                new_state = getNewState(mcst_node.state, 'LEFT')
+                new_state = getNewState(mcst_node.state, 'LEFT', TIME_INCREMENT)
                 mcst_node.turn_left = MCST_State(new_state)
                 self.lastExpandedState = mcst_node.turn_left     
                 break
             elif rand_num < 0.99 and mcst_node.turn_right is None:
                 # Expand to the turn_right state.
-                new_state = getNewState(mcst_node.state, 'RIGHT')
+                new_state = getNewState(mcst_node.state, 'RIGHT', TIME_INCREMENT)
                 mcst_node.turn_right = MCST_State(new_state)
                 self.lastExpandedState = mcst_node.turn_right
                 break
@@ -152,15 +152,15 @@ class MCST:
 
             # Select a random action from this state.
             if rand_num < 0.33:
-                simState = getNewState(simState, 'NO_TURN')
+                simState = getNewState(simState, 'NO_TURN', TIME_INCREMENT)
                 # No penalty for NO_TURN action.
             elif rand_num < 0.66:
                 # TURN_LEFT.
-                simState = getNewState(simState, 'LEFT')
+                simState = getNewState(simState, 'LEFT', TIME_INCREMENT)
                 Q += TURN_ACTION_REWARD
             else:
                 # TURN_RIGHT.
-                simState = getNewState(simState, 'RIGHT')
+                simState = getNewState(simState, 'RIGHT', TIME_INCREMENT)
                 Q += TURN_ACTION_REWARD
             
             Q += TIME_REWARD    # Time penalty for every action.
