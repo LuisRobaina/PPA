@@ -1,16 +1,23 @@
 # libraries
 import matplotlib.pyplot as plt
 import pickle
+from PPA.global_constants import *
 
-# For state discretization purposes:
-MIN_DISTANCE = 0  # (ft).
-MAX_DISTANCE = 60761  # (ft) equivalent to 10 Nautical Miles.
+options_prompt = f"""
+    ************************************************************************************************
+    MODEL_DIR: Path to the model pickle file.
+    ************************************************************************************************
+    """
+print(options_prompt)
+MODEL_DIR = input("MODEL_DIR: ")
 
-MIN_SPEED = 0  # (ft/sec).
-MAX_SPEED = 287  # About 170 knot (ft/sec).
-
-MIN_ANGLE = -180  # (deg).
-MAX_ANGLE = 180  # (deg).
+while True:
+    try:
+        assert(os.path.exists(MODEL_DIR))
+        break
+    except AssertionError as e:
+        print("INVALID MODEL_DIR.")
+        MODEL_DIR = input("MODEL_DIR: ")
 
 x = ['D-O-D', 'T-D-O', 'O-V', 'I-V', 'D-I-O', 'T-I-O', 'A-R-N-P']
 
@@ -22,7 +29,7 @@ D_I_Obin = []
 T_I_Obin = []
 A_R_N_Pbin = []
 
-with open('model.pickle', 'rb') as f:
+with open(MODEL_DIR, 'rb') as f:
     # Pickle the 'data' dictionary using the highest protocol available.
     Learned_Model = pickle.load(f)
 

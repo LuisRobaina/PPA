@@ -9,9 +9,9 @@ def setUpdiscretizers():
     range_angle = (np.array([[x for x in range(MIN_ANGLE, MAX_ANGLE + 1)]])).T
     range_speed = (np.array([[x for x in range(MIN_SPEED, MAX_SPEED + 1)]])).T
 
-    distance_bins = 42  # 121 # len(range_distance) - 1
-    angle_bins = 72     # 72     # len(range_distance) - 1
-    speed_bins = 28     # 57     # len(range_distance) - 1
+    distance_bins = 42 # 121
+    angle_bins = 72 # 72
+    speed_bins = 28 # 57
 
     distance_discretizer = KBinsDiscretizer(n_bins=distance_bins, encode='ordinal', strategy='uniform')
     angle_discretizer = KBinsDiscretizer(n_bins=angle_bins, encode='ordinal', strategy='uniform')
@@ -78,7 +78,8 @@ class DiscreteLocalState:
             return False
         if self.angle_rel_vel_neg_rel_posBIN != obj.angle_rel_vel_neg_rel_posBIN:
             return False
-        
+
+        # Discrete states are the same
         return True
 
 
