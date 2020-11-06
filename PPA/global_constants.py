@@ -2,7 +2,7 @@ import os
 
 # Algorithm's Constants:
 TIME_INCREMENT = 10.0 # Seconds that each action runs for.
-TEST_TIME_INCREMENT = 1 # ....
+TEST_TIME_INCREMENT = 10.0  # ....
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination state.
@@ -26,7 +26,7 @@ ACTIONS = {                     # Actions are in degrees per second.
 }
 
 # TODO: Change back...
-MCTS_ITERATIONS = 5000
+MCTS_ITERATIONS = 10000
 # UCB1 Exploration term.
 UCB1_C = 2
 GAMMA = 0.9                     # Discount Factor.
@@ -34,7 +34,7 @@ GAMMA = 0.9                     # Discount Factor.
 EPISODE_LENGTH = None
 
 # Directory Paths:
-TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
+TRAINING_SET = 'PPA/Training Encounters/Test_Encounter_Geometries2.csv'
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 
 # Conversion Factors:

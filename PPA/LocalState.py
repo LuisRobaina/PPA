@@ -2,17 +2,27 @@ from PPA.State import *
 
 
 class LocalState:
-
+    """
+    A Local State is a geometrical representation of a given state in continuous
+    2D coordinates. Converting Absolute states to Local states allows us to take
+    advantage of symmetry.
+    """
     def __init__(self, r_do, theta_do, v_do, r_io, theta_io, psi_io_nr_io ,v_i ):
-        
+        # Distance (ft) ownship to the destination.
         self.distance_ownship_destination = r_do
+        # Angle ownship heading relative to destination.
         self.theta_destintation_ownship = theta_do
+        # ownship velocity.
         self.ownship_vel = v_do
+        # intruder velocity.
         self.intruder_vel = v_i
+        # Distance between intruder and ownship.
         self.distance_int_own = r_io
+        # Angle intruder heading relative to ownship heading.
         self.theta_int_own_track = theta_io
         self.angle_rel_vel_neg_rel_pos = psi_io_nr_io
-        
+
+    # Return a string representation of a LocalState object.
     def __str__(self):
         return f"""
             distance ownship destination (r_do) = {self.distance_ownship_destination},
@@ -24,26 +34,20 @@ class LocalState:
             intruder speed (v_i) = {self.intruder_vel}
         """
 
-    # For testing:
-    def return_as_array(self):
-        return np.array([self.distance_ownship_destination,
-                        self.theta_destintation_ownship,
-                        self.ownship_vel,
-                        self.intruder_vel,
-                        self.distance_int_own,
-                        self.theta_int_own_track,
-                        self.angle_rel_vel_neg_rel_pos
-                        ])
-
 
 def convertAbsToLocal(absolute_encounter):
     """
-    Given an absolute state s, convert s to a local state.
+    Given an absolute state S, convert S to a local state L.
     """
+
+    # Ownship position [x, y]
     ownship_pos = np.array(absolute_encounter.ownship_pos)
+    # Intruder position [x, y]
     intruder_pos = np.array(absolute_encounter.intruder_pos)
-    
+
+    # Ownship velocity [v_x, v_y]
     ownship_vel = np.array(absolute_encounter.ownship_vel)
+    # Intruder velocity [v_x, v_y]
     intruder_vel = np.array(absolute_encounter.intruder_vel)
     
     # Distance to the destination (ownship).
@@ -54,19 +58,18 @@ def convertAbsToLocal(absolute_encounter):
     # atan2(y,x).
     theta_destintation_ownship = math.degrees(math.atan2(dest_ownship_vector[1], dest_ownship_vector[0]))
     
-    psi_o = math.degrees(math.atan2(ownship_vel[0], ownship_vel[1])) # ownship vel w.r.t y axis.
+    psi_o = math.degrees(math.atan2(ownship_vel[0], ownship_vel[1]))    # ownship vel w.r.t y axis.
      
     speed_destination_ownship = LA.norm(destination - ownship_vel)   # speed of ownship.
     
     intruder_pos_relative_ownship = intruder_pos - ownship_pos
-    distance_intruder_ownship = LA.norm(intruder_pos_relative_ownship)
+    distance_intruder_ownship = LA.norm(intruder_pos_relative_ownship)  # distance intruder and ownship.
     
     # intruder angle w.r.t y axis.
     theta_int_own_orig = math.degrees(math.atan2(intruder_pos_relative_ownship[0], intruder_pos_relative_ownship[1]))
     theta_intruder_own_track = theta_int_own_orig - psi_o # angle of the intruder pos w.r.t ownship's ground track.
     
     # tan^-1 (-180,180]
-    
     if theta_intruder_own_track < -180:
         theta_intruder_own_track += 360
     
@@ -91,7 +94,7 @@ def convertAbsToLocal(absolute_encounter):
     elif angle_rel_vel_neg_rel_pos > 180:
         angle_rel_vel_neg_rel_pos -= 360
         
-    # Create local state.
+    # Create local state object.
     local_state = LocalState(distance_ownship_destination,
                              theta_destintation_ownship,
                              speed_destination_ownship,
@@ -104,6 +107,7 @@ def convertAbsToLocal(absolute_encounter):
 
 def isTerminalState(state: State):
     """
+    Is a Local State terminal?
     Returns a non-zero reward for a final state:
 
         DESTINATION_STATE_REWARD = 1.

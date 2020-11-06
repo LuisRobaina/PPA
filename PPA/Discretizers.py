@@ -1,28 +1,40 @@
+"""
+Discretizers.py implements methods to discretize a local state.
+"""
+
+
 from PPA.global_constants import *
 import numpy as np
 from sklearn.preprocessing import KBinsDiscretizer
 
 
 def setUpdiscretizers():
-    
+
+    # Generate the range of valid integer values for features.
     range_distance = (np.array([[x for x in range(MIN_DISTANCE, MAX_DISTANCE + 1)]])).T
     range_angle = (np.array([[x for x in range(MIN_ANGLE, MAX_ANGLE + 1)]])).T
     range_speed = (np.array([[x for x in range(MIN_SPEED, MAX_SPEED + 1)]])).T
 
-    distance_bins = 42 # 121
-    angle_bins = 72 # 72
-    speed_bins = 28 # 57
+    # Set the number of bins to use for every feature type.
+    distance_bins = 121     # 42 #
+    angle_bins = 72     # 72 #
+    speed_bins = 57     # 28 #
 
+    # Generate the discretizer objects using KBinsDiscretizer module.
+    # Refer to sklearn KBinsDiscretizers documentation for discretizer types and options.
     distance_discretizer = KBinsDiscretizer(n_bins=distance_bins, encode='ordinal', strategy='uniform')
     angle_discretizer = KBinsDiscretizer(n_bins=angle_bins, encode='ordinal', strategy='uniform')
     speed_discretizer = KBinsDiscretizer(n_bins=speed_bins, encode='ordinal', strategy='uniform')
 
+    # Fit the values of each range into bins using the discretization.
     distance_discretizer.fit(range_distance)
     angle_discretizer.fit(range_angle)
     speed_discretizer.fit(range_speed)
 
+    # Compute the discrete state space size.
     space_size = (distance_bins**2) * (angle_bins**3) * (speed_bins**2)
 
+    # Return the discretizers to use them during training.
     return [distance_discretizer, angle_discretizer, speed_discretizer, space_size]
 
 
@@ -59,7 +71,7 @@ class DiscreteLocalState:
 
     def __eq__(self, obj):
         """
-            Two discrete states are the same if they share all discrete
+            Two discrete states are the same if they share all bins discrete
             features.
         """
         if not isinstance(obj, DiscreteLocalState):
@@ -84,16 +96,25 @@ class DiscreteLocalState:
 
 
 def discretizeLocalState(local_state, distance_discretizer, angle_discretizer, speed_discretizer):
-   
+    """
+    :param local_state: A local state to discretize.
+    :param distance_discretizer: The discretizer to use for distance features.
+    :param angle_discretizer: The discretizer to use for angle features.
+    :param speed_discretizer: The discretizer to use for speed features.
+    :return: A discrete state object.
+    """
+    # Set of distance features
     LocalStateVectorDistances = [
         local_state.distance_ownship_destination,
         local_state.distance_int_own
     ]
+    # Set of Angle features
     LocalStateVectorAngles = [
         local_state.theta_destintation_ownship,
         local_state.theta_int_own_track,
         local_state.angle_rel_vel_neg_rel_pos
-    ]  
+    ]
+    # Set of Speed features
     LocalStateVectorSpeeds = [
         local_state.ownship_vel,
         local_state.intruder_vel

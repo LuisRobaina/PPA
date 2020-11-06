@@ -6,7 +6,22 @@ import pandas as pd
 import csv
 import pickle
 
-def constructPath(initial_state: State, encounter_path):
+# Test performance counters.
+failedTests = 0
+passedTests = 0
+LODWCCount = 0
+UnknownStateCount = 0
+AbandonStateCount = 0
+# Keep track of encounters and their results.
+SUCCESS_LIST = []
+LODWC_LIST = []
+UNKNOWNSTATE_LIST = []
+ABANDONSTATE_LIST = []
+
+
+def constructPath(initial_state: State, encounter_path, encounter_index):
+
+    global UnknownStateCount, AbandonStateCount, LODWCCount
 
     print("TRAJ FOR:", encounter_path)
     trajectory_states = [initial_state]
@@ -38,6 +53,9 @@ def constructPath(initial_state: State, encounter_path):
         
         if not model_has_state:
             print('STATE_NOT_MODELED')
+            UNKNOWNSTATE_LIST.append(encounter_index)
+            UnknownStateCount += 1
+
             writeTraj(encounter_path, trajectory_states)
             return -1   # Path couldn't be constructed missing states in model.
     
@@ -56,8 +74,13 @@ def constructPath(initial_state: State, encounter_path):
     else:
         writeTraj(encounter_path, trajectory_states)
         if reward == ABANDON_STATE_REWARD:
+            ABANDONSTATE_LIST.append(encounter_index)
+            AbandonStateCount += 1
             print('ABANDON_STATE')
+
         elif reward == LODWC_REWARD:
+            LODWCCount +=1
+            LODWC_LIST.append(encounter_index)
             print('LODWC')
         return -1   # Failed path.
 
@@ -114,13 +137,10 @@ if __name__ == "__main__":
             print("INVALID RESULTS_DIR.")
             RESULTS_DIR = input("RESULTS_DIR: ")
 
-    # Test performance counters.
-    failedTests = 0
-    passedTests = 0
-    SUCCESS_LIST= []
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
     ENCOUNTERS_GEOMETRIES = pd.read_csv(ENCOUNTER_DIR, header=0)
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)  # Count the number of rows in set of encounters.
+
     print("Testing on ", NUMBER_OF_ENCOUNTERS, " encounters.")
 
     # Retrieve discretizers:
@@ -132,6 +152,7 @@ if __name__ == "__main__":
     with open(MODEL_DIR, 'rb') as f:
         # Pickle the 'data' dictionary using the highest protocol available.
         Learned_Model = pickle.load(f)
+
     print("MODEL SIZE: ", len(Learned_Model))
 
     for encounter_index in range(NUMBER_OF_ENCOUNTERS):
@@ -139,10 +160,10 @@ if __name__ == "__main__":
         ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
         ENCOUNTER_PATH = RESULTS_DIR + '/' + ENCOUNTER_NAME
         print(ENCOUNTER_PATH)
-        init_state = getInitStateFromEncounter(ENCOUNTER_PATH, encounter_index+1)
+        init_state = getInitStateFromEncounter(ENCOUNTER_PATH, encounter_index)
 
         # Try to construct path.
-        outcome = constructPath(init_state, ENCOUNTER_PATH)
+        outcome = constructPath(init_state, ENCOUNTER_PATH, encounter_index)
 
         if outcome == -1:  # Failed Path.
             failedTests += 1
@@ -153,7 +174,20 @@ if __name__ == "__main__":
             SUCCESS_LIST.append(encounter_index)
             passedTests += 1
 
-    print("PASSED = ", passedTests)
-    print("LIST OF SUCCESS: ", SUCCESS_LIST)
-    print("FAILED = ", failedTests)
+    results_str = f"""
+    ************************************************************************************************
 
+        PASSED =  {passedTests}
+        FAILED = {failedTests}
+        LIST OF SUCCESS = {SUCCESS_LIST}
+        SUCCESS % = {passedTests/NUMBER_OF_ENCOUNTERS * 100}
+
+        LODWC = {LODWCCount}
+        LIST OF LOWCD = {LODWC_LIST}
+
+        UNKNOWN STATES = {UnknownStateCount}
+        LIST OF UNKNOWN STATES FAILS = {UNKNOWNSTATE_LIST}
+
+    ************************************************************************************************
+    """
+    print(results_str)
