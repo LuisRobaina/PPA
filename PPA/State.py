@@ -9,26 +9,35 @@ class State:
     # Define a state object type.
     def __init__(self, ownship_pos, intruder_pos, ownship_vel, intruder_vel):
 
-        # np.array all.
+        """
+        Note:
+            All the features of a State object are numpy arrays.
+        """
         self.ownship_pos = ownship_pos      # [x,y] (ft)
         self.intruder_pos = intruder_pos    # [x,y] (ft)
         self.ownship_vel = ownship_vel      # [v_x,v_y] (ft/sec)
         self.intruder_vel = intruder_vel    # [v_x,v_y] (ft/sec)
 
-    def get_horizontal_distance(self):      # (ft)
+    def get_distance(self):                 # Distance between the aircraft in ft.
         return LA.norm(self.ownship_pos - self.intruder_pos)
     
-    def __str__(self):
+    def __str__(self):                      # String representation of a State object.
         return f"""
-            own_pos (ft) = ({self.ownship_pos}),
-            own_vel (ft/s) = ({self.ownship_vel}),
-            int_pos (ft) = ({self.intruder_pos}),
-            int_vel (ft/s) = ({self.intruder_vel})        
+            own_pos (ft) = [{self.ownship_pos}]
+            own_vel (ft/s) = [{self.ownship_vel}]
+            int_pos (ft) = [{self.intruder_pos}]
+            int_vel (ft/s) = [{self.intruder_vel}]        
         """
 
 
 def getInitStateFromEncounter(encounter_directory, encounter_index):
-    
+    """
+    Load the desc.csv file that contains the details about an encounter and get the initial state.
+
+    :param encounter_directory:
+    :param encounter_index:
+    :return:
+    """
     # Load an encounter description from the directory.
     ENCOUNTER_DESC = pd.read_csv(encounter_directory + '/desc.csv')
 
@@ -37,19 +46,21 @@ def getInitStateFromEncounter(encounter_directory, encounter_index):
 
     """
     Note:
-    encounter_properties is a dictionary with the following integer keys
-    (All keys are integers):
-        0: (time_to_CPA_sec), 1: (destination_time_after_CPA_sec), 2: (OIF_CPA), 3: (CPA_distance_ft),
-        4: (v_o_kts), 5: (v_i_kts), 6: (int_rel_heading_deg), 7: (total_runs), 8: (depth), 9: (skip).
+    encounter_properties is a dictionary with the following integer keys:
+        0: (time_to_CPA_sec) 
+        1: (destination_time_after_CPA_sec) 
+        2: (OIF_CPA) 
+        3: (CPA_distance_ft)
+        4: (v_o_kts) 
+        5: (v_i_kts) 
+        6: (int_rel_heading_deg)
     """
-    
-    # Given the encounter properties, compute the initial state of the system of the two aircrafts.
+    # Given the encounter properties, compute the initial state of the system of the two aircraft.
     encounter_state = computeInitialState(encounter_properties)
     return encounter_state
 
 
 def computeInitialState(encounter_properties: dict) -> State:
-
     """
         Compute the ownship and intruder's initial states based on the encounter
         design parameters:
@@ -69,7 +80,7 @@ def computeInitialState(encounter_properties: dict) -> State:
     """
     
     """
-    For the ownship:
+        For the ownship:
     """
     # Velocity of the ownship.
     # Note: Ownship flights north so the x component of ownship_vel is 0.
@@ -95,7 +106,7 @@ def computeInitialState(encounter_properties: dict) -> State:
     ownship_pos = np.array([ownship_x, ownship_y])
     
     """
-    For the intruder:
+        For the intruder:
     """
     # Velocity of the intruder:
     
@@ -116,15 +127,15 @@ def computeInitialState(encounter_properties: dict) -> State:
     
     # Get the horizontal distance at CPA.
     S = float(encounter_properties[3])
-    # Initial distance btw aircrafts:
+    # Initial distance btw aircraft:
     delta_pos_magnitud = math.sqrt((S**2) + (time_to_CPA**2 * delta_vel_magnitud**2))
     
     # Let the angle between delta_vel_t0 and delta_post_t0 be theta.
-    cos_theta = -time_to_CPA * math.sqrt(delta_vel_magnitud**2) / delta_pos_magnitud;
+    cos_theta = -time_to_CPA * math.sqrt(delta_vel_magnitud**2) / delta_pos_magnitud
     sin_theta_2 = 1 - cos_theta**2;
     
-    if (sin_theta_2 < 0 and sin_theta_2 > -1e-15):
-        sin_theta_2 = 0     # ignore numerical impresion.
+    if sin_theta_2 < 0 and sin_theta_2 > -1e-15:
+        sin_theta_2 = 0
     
     sin_theta = math.sqrt(sin_theta_2);
 
@@ -148,6 +159,7 @@ def computeInitialState(encounter_properties: dict) -> State:
     if intruder_pos_at_CPA[0] <= 0 and OIF_CPA is True or intruder_pos_at_CPA[1] >= 0 and OIF_CPA is False:
         # Rotation performed was the correct rotation.
         pass
+
     else:
         # Perform Counter-clock wise rotation.
         rotation_matrix = np.array([ 
@@ -167,16 +179,17 @@ def getNewState(state: State, action, TIME):
         Returns an instance of State which
         represents a new state after taking an
         action: (q,a) -> q'
+        TIME: How long should an action go for.
+
     """
     ownship_vel = np.array(state.ownship_vel)
-    ownship_pos = np.array(state.ownship_pos)
     
     # Velocity:
     if action is 'NO_TURN':
         new_vel_own = ownship_vel   # [v_x,v_y] (ft/sec).
 
     else:
-        theta = 5   # degs.
+        theta = 5   # degrees.
         cos_theta = math.cos(math.radians(theta))
         sin_theta = math.sin(math.radians(theta))
         

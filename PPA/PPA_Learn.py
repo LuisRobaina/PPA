@@ -1,3 +1,7 @@
+"""
+Run the training/learning process...
+Generate a file that represents our model, this file is then loaded into PPA_Test to evaluate the model.
+"""
 from PPA.MCTS import *
 from PPA.StateActionQN import *
 import pickle
@@ -8,48 +12,48 @@ from PPA.global_constants import *
 # Set of StateActionQN objects that represent the learned model.
 Learned_Model = []
 
-# Trajectory recommended for a given encounter.
-trajectory_states = []
-
-# Retrieve discretizers.
+# Retrieve discretizers to use during training.
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
 
 last_model_index = 0
 
+# Used to keep track of the training number when creating a results directory.
 TRAINING_NUMBER = 0
 
-# ENCOUNTER
-def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
 
+def learnFromEncounter(encounter_directory, encounter_index):
+    """
+    Given the directory to an encounter, learn from it.
+    :param encounter_directory:
+    :param encounter_index:
+    :param mcts:
+    :return:
+    """
     global last_model_index
 
     print("LEARNING  FROM ", encounter_directory)
 
     encounter_state = getInitStateFromEncounter(encounter_directory, encounter_index)
 
-    # TODO: Think about this...
-    # Sanity check -- are the two aircraft's initial positions well separated
-    # by at least the well clear?
-    # assert(encounter_state.get_horizontal_distance() >=  DWC_DIST)
+    # Sanity check -- are the two aircraft's initial positions well separated by at least the well clear?
+    try:
+        assert (encounter_state.get_distance() >= DWC_DIST)
+    except AssertionError:
+        print("(DWC_DIST ERROR): SKIPPED ENCOUNTER", encounter_index)
+        return
 
-    """
-        Run Monte Carlo Tree Search:
-    """
-    # Generate a Monte Carlo Tree Search with initial state
-    # at the initial encounter state.
-    if mcts is None:
-        mcts = MCST(encounter_state)
+    # Generate a Monte Carlo Tree Search with initial state at this initial encounter state.
+    mcts = MCST(encounter_state)
     
     # Perform selection, expansion, and simulation procedures MCTS_ITERATIONS times.
     """
         For each iteration of the SELECT, EXPAND, and SIMULATE procedure
         we learn something about one or more continuous state and action pairs.
     """
-
     for i in range(MCTS_ITERATIONS):
 
         # Try to construct path every 1000 iterations of MCTS: avoid over-fitting.
-        if i != 0 and i % 1000 == 0:
+        if i % MCTS_CUT == 0:
 
             # Empty the set of (state, action, reward):
             mcts.state_action_reward = []
@@ -57,28 +61,29 @@ def learnFromEncounter(encounter_directory, encounter_index, mcts: MCST):
             mcts.getStateActionRewards(mcts.root)
             # Add/Update model objects.
             addModelObjects(mcts)
-            # TODO: REMOVE LOG.
-            print("MODELED: ", len(Learned_Model))
-            # Try to construct a path.
+            print("STATES MODELED: ", len(Learned_Model))
+            # Try to construct a path with the current model.
             result = constructPathWhileLearning(encounter_state, last_model_index)
             if result == 0:
                 print("SUCCESS PATH")
                 return
             last_model_index = len(Learned_Model)
 
-        # Run MCTS steps.
+        """
+            Run Monte Carlo Tree Search:
+        """
         selected_state = mcts.selection()
         mcts.expansion(selected_state)
         mcts.simulate()
 
     last_model_index = 0
-    return mcts
 
 
 def addModelObjects(mcts):
     """
-    :param mcts:
-    :return:
+    After a number of iterations of MCTS for a given encounter, get the set of (state,action,rewards) and add it
+    to the model. If a state is already  in the model update its Q and N values for the given action by averaging.
+    :param mcts: The tree with the (state,action,rewards) tuples.
     """
 
     # The set of state,action,rewards that agent learnt from this encounter's iteration.
@@ -88,7 +93,7 @@ def addModelObjects(mcts):
             # This is a non expanded child - No knowledge about its Q value.
             continue
 
-        # Assume the state,action pair in not modeled.
+        # Assume this state,action pair in not modeled.
         already_in_model = False
 
         # Convert state to a local state.
@@ -121,6 +126,8 @@ def addModelObjects(mcts):
 
 def runEncounters():
     """
+    Given the set of training encounters specified in globlal_constants -- TRAINING_SET, iterate over each
+    encounter and run MCTS.
     :return:
     """
 
@@ -146,53 +153,56 @@ def runEncounters():
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)     # Count the number of rows in set of encounters.
 
     """
-        Learn from training set:
+        Learn from training set
     """
     for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
-            # Create a directory for this encounter's description and resulting path after a model test`.
+            # Create a directory for this encounter's description and resulting path after a model test.
             ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
             ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
             os.makedirs(ENCOUNTER_PATH)
             
             # Create a .csv file to describe this encounter
             (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
-            # Learn:
-
-            mcts = learnFromEncounter(ENCOUNTER_PATH, encounter_index, None)
+            # Learn
+            learnFromEncounter(ENCOUNTER_PATH, encounter_index)
 
 
 def constructPathWhileLearning(initial_state: State, last_model_index):
     """
-    :param initial_state:
-    :param last_model_index:
+    After a number of iterations of MCTS for a given encounter, try to construct a trajectory using the current model.
+    :param initial_state: Initial state for the trajectory
+    :param last_model_index: Used to point to the last checked model object, when new state,action pairs are added
+                             to the model only check the recently added  (Avoid checking the whole model list).
     :return:
     """
-    trajectory_states = [initial_state]
 
     current_state = initial_state
-
-    while isTerminalState(current_state) == 0:
+    # Begin to construct a trajectory
+    while isTerminalState(current_state) == 0: # A return of 0 means the current state is not final.
+        # Assume this specific state is not modeled in memory yet.
         model_has_state = False
-
+        # Convert to a local state.
         current_local_state = convertAbsToLocal(current_state)
-
+        # Discretize the local state
         current_discrete_local_state = discretizeLocalState(current_local_state,
                                                             distance_discretizer,
                                                             angle_discretizer,
                                                             speed_discretizer)
-        # Generate model object.
+
+        # Generate a dummy model object for comparison purposes.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
+        # Iterate over the set of modeled objects.
         for state_in_model in Learned_Model[last_model_index:]:
             if model_lookup == state_in_model:  # same discrete local state.
                 model_has_state = True
                 action = state_in_model.getBestAction()
                 current_state = getNewState(current_state, action, TIME_INCREMENT)
-                trajectory_states.append(current_state)
                 break
-
         if not model_has_state:
-            return -1  # Valid trajectory couldn't be constructed: missing states in model.
+            return -1  # Valid trajectory couldn't be constructed: Missing the current state in model.
+    # loop ends: Reached a final state.
+
     """
         What final state did the agent reached?
         Possible final states return values: 
@@ -212,14 +222,16 @@ def constructPathWhileLearning(initial_state: State, last_model_index):
         return -1  # Failed: A valid trajectory couldn't be constructed.
 
 
+"""
+Main method.
+"""
 if __name__ == "__main__":
 
     space_size_str = "{:e}".format(space_size)
-
     # Print useful information about the hyper-parameters.
-
     info_str = f'''
-        ****PPA TRAINING****
+        ***********PPA TRAINING PARAMETERS**********
+
             STATE SPACE SIZE = {space_size_str}
             # MCTS ITERATIONS = {MCTS_ITERATIONS} 
             GAMMA = {GAMMA}
@@ -227,20 +239,24 @@ if __name__ == "__main__":
             EXPLORATION FACTOR (C) = {UCB1_C}
             TIME INCREMENT = {TIME_INCREMENT}
             TRAINING SET = {TRAINING_SET}
-        ********************
+
+        ********************************************
     '''
     print(info_str)
 
-    # Train with the training examples.
+    # Train using the training examples.
     runEncounters()
-
+    # What percentage of the discrete state space did we cover.
     print("Final State Space Coverage (%) = ", (len(Learned_Model) / space_size) * 100)
 
-    # open a file, where you want to store the data
+    """
+    Open a file, where you want to store the model.
+    This file can be loaded and used with PPA_Test.py to evaluate the  performance of the model.
+    """
+
     model_str = f'model-{TRAINING_NUMBER}.pickle'
     file = open(model_str, 'wb')
-
-    # dump information to that file
+    # dump model information to that file.
     pickle.dump(Learned_Model, file)
 
     # close the file

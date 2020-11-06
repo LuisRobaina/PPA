@@ -1,0 +1,8 @@
+Training Encounters:
+
+The set of training encounters define the initial state where the MCTS will begin to run. Training encounters
+must be diverse enough to make sure the model covers most of the state space.
+
+1. Training Encounters set are csv files, the path to this files must be placed as the global constant: TRAINING_SET.
+2. Check any of the given training set csv file to see the format.
+3. Each training set must start with a value of 0 on the Run column indicating an index for the encounter.

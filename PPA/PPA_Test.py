@@ -1,4 +1,11 @@
-from PPA.Discretizers import *
+"""
+
+PPA_Test is used to evaluate the performance of a model generated with PPA_Learn.
+This script tries to construct a valid trajectory for a given set of encounters
+and outputs that trajectory as a csv file placing each trajectory on the corresponding
+encounter directory for later analysis.
+
+"""
 from PPA.MCTS import *
 from PPA.StateActionQN import *
 from PPA.global_constants import *
@@ -12,25 +19,34 @@ passedTests = 0
 LODWCCount = 0
 UnknownStateCount = 0
 AbandonStateCount = 0
-# Keep track of encounters and their results.
-SUCCESS_LIST = []
-LODWC_LIST = []
-UNKNOWNSTATE_LIST = []
-ABANDONSTATE_LIST = []
+
+# Keep track of encounters and their results by categories
+SUCCESS_LIST = []       # Successful encounters.
+LODWC_LIST = []         # Encounters that resulted in Lost Of Well Clear.
+UNKNOWNSTATE_LIST = []  # Encounters that resulted in an Un-modeled state.
+ABANDONSTATE_LIST = []  # Encounters that resulted in an Abandon state.
 
 
 def constructPath(initial_state: State, encounter_path, encounter_index):
-
+    """
+    Try to construct a path using the knowledge of our model.
+    :param initial_state: Initial encounter state.
+    :param encounter_path: Directory to store the trajectory csv file.
+    :param encounter_index: Index of this encounter.
+    """
     global UnknownStateCount, AbandonStateCount, LODWCCount
 
+    # Log
     print("TRAJ FOR:", encounter_path)
-    trajectory_states = [initial_state]
-    
-    current_state = initial_state
 
+    trajectory_states = [initial_state]
+    current_state = initial_state
+    """
+    While a terminal state is not reached keep taking actions as suggested by our model.
+    """
     while isTerminalState(current_state) == 0:
         model_has_state = False
-        
+
         current_local_state = convertAbsToLocal(current_state)
     
         current_discrete_local_state = discretizeLocalState(current_local_state, 
@@ -41,13 +57,12 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
         # Generate model object.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
         for state_in_model in Learned_Model:
-            if model_lookup == state_in_model:  # same discrete local state.
+            if model_lookup == state_in_model:  # Same discrete local state.
                 model_has_state = True
                 action = state_in_model.getBestAction()
-                # print("BEF: ", current_state)
+                # Log action taken.
                 print("TOOK ACTION: ", action)
                 current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)
-                # print("AFT: ", current_state)
                 trajectory_states.append(current_state)
                 break
         
@@ -68,10 +83,11 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
     """
     reward = isTerminalState(current_state)
     if reward is DESTINATION_STATE_REWARD:
-        # Save path to csv file:
+        # Save trajectory to csv file
         writeTraj(encounter_path, trajectory_states)
         return 0    # Success path.
     else:
+        # Save trajectory to csv file
         writeTraj(encounter_path, trajectory_states)
         if reward == ABANDON_STATE_REWARD:
             ABANDONSTATE_LIST.append(encounter_index)
@@ -86,12 +102,16 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
 
 
 def writeTraj(encounter_path, trajectory_states):
+    """
+    Save the coordinates of each time on a trajectory to a csv file.
+    """
 
-    with open(encounter_path + "/" + "Traj.csv", 'w', ) as csvfile:
+    with open(encounter_path + "/" + "Trajectory.csv", 'w', ) as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['O_X', 'O_Y', 'I_X', 'I_Y'])
 
         for state in trajectory_states:
+            # Write the ownship and intruder position.
             writer.writerow([state.ownship_pos[0],
                              state.ownship_pos[1],
                              state.intruder_pos[0],
@@ -99,13 +119,17 @@ def writeTraj(encounter_path, trajectory_states):
                              ])
 
 
+"""
+Main method: User prompts.
+"""
 if __name__ == "__main__":
 
     options_prompt = f"""
     ************************************************************************************************
-    ENCOUNTER_DIR : Path to the set of Encounters to test the model on. (csv file).
-    MODEL_DIR: Path to the model pickle file.
-    RESULTS_DIR: Path to the directory to store results for each encounter.
+                                            PPA TEST
+    ENCOUNTER_DIR = Path to the set of Encounters to test the model on. (csv file).
+    MODEL_DIR =  Path to the model pickle file.
+    RESULTS_DIR = Path to the directory to store results for each encounter.
     ************************************************************************************************
     """
     print(options_prompt)
@@ -174,11 +198,13 @@ if __name__ == "__main__":
             SUCCESS_LIST.append(encounter_index)
             passedTests += 1
 
+    # Log Results.
     results_str = f"""
     ************************************************************************************************
-
+                                            PPA TEST REPORT
         PASSED =  {passedTests}
         FAILED = {failedTests}
+
         LIST OF SUCCESS = {SUCCESS_LIST}
         SUCCESS % = {passedTests/NUMBER_OF_ENCOUNTERS * 100}
 
@@ -188,6 +214,8 @@ if __name__ == "__main__":
         UNKNOWN STATES = {UnknownStateCount}
         LIST OF UNKNOWN STATES FAILS = {UNKNOWNSTATE_LIST}
 
+        ABANDON STATES = {AbandonStateCount}
+        ABANDON STATES List = {ABANDONSTATE_LIST}
     ************************************************************************************************
     """
     print(results_str)

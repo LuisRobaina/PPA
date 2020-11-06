@@ -6,6 +6,7 @@ class LocalState:
     A Local State is a geometrical representation of a given state in continuous
     2D coordinates. Converting Absolute states to Local states allows us to take
     advantage of symmetry.
+    Refer to README for more details about the choice of local features.
     """
     def __init__(self, r_do, theta_do, v_do, r_io, theta_io, psi_io_nr_io ,v_i ):
         # Distance (ft) ownship to the destination.
@@ -39,7 +40,6 @@ def convertAbsToLocal(absolute_encounter):
     """
     Given an absolute state S, convert S to a local state L.
     """
-
     # Ownship position [x, y]
     ownship_pos = np.array(absolute_encounter.ownship_pos)
     # Intruder position [x, y]
@@ -114,7 +114,7 @@ def isTerminalState(state: State):
         ABANDON_STATE_REWARD = -0.5.
         LODWC_REWARD = -0.3.
 
-    Otherwise return 0 for non-final states.
+    Otherwise return 0 for a non-final states.
     """
     local_state = convertAbsToLocal(state)
     
