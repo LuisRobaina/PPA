@@ -80,7 +80,7 @@ class StateActionQN:
 
         elif action is "NO_TURN":
 
-            if self.N == 0:
+            if self.NO_TURN_N == 0:
                 # First Q value for this action.
                 self.NO_TURN_Q = New_Q
                 

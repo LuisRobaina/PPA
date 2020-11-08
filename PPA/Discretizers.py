@@ -100,10 +100,10 @@ class DiscreteLocalState:
             return False
         if self.theta_destintation_ownshipBIN != obj.theta_destintation_ownshipBIN:
             return False
-        if self.ownship_velBIN != obj.ownship_velBIN:
-            return False
-        if self.intruder_velBIN != obj.intruder_velBIN:
-            return False
+        # if self.ownship_velBIN != obj.ownship_velBIN:
+        #     return False
+        # if self.intruder_velBIN != obj.intruder_velBIN:
+        #     return False
         if self.dis_int_ownBIN != obj.dis_int_ownBIN:
             return False
         if self.theta_int_own_trackBIN != obj.theta_int_own_trackBIN:

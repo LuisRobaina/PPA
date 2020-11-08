@@ -20,16 +20,17 @@ last_model_index = 0
 # Used to keep track of the training number when creating a results directory.
 TRAINING_NUMBER = 0
 
+mcts = None
+
 
 def learnFromEncounter(encounter_directory, encounter_index):
     """
     Given the directory to an encounter, learn from it.
     :param encounter_directory:
     :param encounter_index:
-    :param mcts:
     :return:
     """
-    global last_model_index
+    global last_model_index, mcts
 
     print("LEARNING  FROM ", encounter_directory)
 
@@ -43,7 +44,8 @@ def learnFromEncounter(encounter_directory, encounter_index):
         return
 
     # Generate a Monte Carlo Tree Search with initial state at this initial encounter state.
-    mcts = MCST(encounter_state)
+    if mcts is None:
+        mcts = MCST(encounter_state)
     
     # Perform selection, expansion, and simulation procedures MCTS_ITERATIONS times.
     """
@@ -52,7 +54,7 @@ def learnFromEncounter(encounter_directory, encounter_index):
     """
     for i in range(MCTS_ITERATIONS):
 
-        # Try to construct path every 1000 iterations of MCTS: avoid over-fitting.
+        # Try to construct path every MCTS_CUT iterations of MCTS: avoid over-fitting.
         if i % MCTS_CUT == 0:
 
             # Empty the set of (state, action, reward):
