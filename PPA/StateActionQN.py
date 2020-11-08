@@ -95,7 +95,6 @@ class StateActionQN:
     def __str__(self):
         return f'''
             [discrete_state = {self.discrete_state}]
-            N(Updates) = {self.N}
             LEFT_Q = {"{:e}".format(self.LEFT_Q)},
             RIGHT_Q = {"{:e}".format(self.RIGHT_Q)},
             NO_TURN_Q = {"{:e}".format(self.NO_TURN_Q)}
