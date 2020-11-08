@@ -70,7 +70,8 @@ class MCST_State:
 
 class MCST:
     """
-    Implements a MCTS class.
+    Implementation of the procedures needed to construct a MCTS: Selection, Expansion
+    Simulation, and Back-propagation.
     """
     def __init__(self, state):
         # Set the MCST initial state.
@@ -201,8 +202,6 @@ class MCST:
                 simState = getNewState(simState, 'RIGHT', TIME_INCREMENT)
                 # penalize for turning.
                 Q += TURN_ACTION_REWARD
-            
-            Q += TIME_REWARD    # Time penalty for every action.
 
             # Check if this state is final.
             state_Q = isTerminalState(simState)
@@ -274,6 +273,3 @@ class MCST:
 
         current_state.clean()
         return current_state.Q
-
-
-

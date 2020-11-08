@@ -60,7 +60,7 @@ def convertAbsToLocal(absolute_encounter):
     
     psi_o = math.degrees(math.atan2(ownship_vel[0], ownship_vel[1]))    # ownship vel w.r.t y axis.
      
-    speed_destination_ownship = LA.norm(destination - ownship_vel)   # speed of ownship.
+    speed_destination_ownship = LA.norm(destination - ownship_vel)      # speed of ownship.
     
     intruder_pos_relative_ownship = intruder_pos - ownship_pos
     distance_intruder_ownship = LA.norm(intruder_pos_relative_ownship)  # distance intruder and ownship.

@@ -1,3 +1,6 @@
+"""
+Generate a Density graph for the 2D coordinates an ownship visits during simulations.
+"""
 import matplotlib
 import matplotlib.pyplot as plt
 from scipy.stats import kde
@@ -7,7 +10,7 @@ import argparse
 
 matplotlib.use('Agg')
 
-parser = argparse.ArgumentParser(description='Short sample app')
+parser = argparse.ArgumentParser(description='Generate Density Map')
 parser.add_argument('-n', action="store", dest='file_name', default=False)
 
 args = parser.parse_args()

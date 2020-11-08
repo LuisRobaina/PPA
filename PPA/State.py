@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class State:
-    # Define a state object type.
+    # Defines a state object type.
     def __init__(self, ownship_pos, intruder_pos, ownship_vel, intruder_vel):
 
         """

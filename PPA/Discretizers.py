@@ -117,7 +117,7 @@ class DiscreteLocalState:
 
 def discretizeLocalState(local_state, distance_discretizer, angle_discretizer, speed_discretizer):
     """
-        Given a local state find the discretized versiob: Place every continuous feature into bins.
+    Given a local state find the discretized versiob: Place every continuous feature into bins.
     :param local_state: A local state to discretize.
     :param distance_discretizer: The discretizer to use for distance features.
     :param angle_discretizer: The discretizer to use for angle features.

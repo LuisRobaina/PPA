@@ -8,7 +8,6 @@ DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination.
 ABANDON_STATE_REWARD = -0.5     # Negative reward (a penalty) if ownship reaches state too far from destination.
-TIME_REWARD = -0.001            # Negative reward (penalty) for every second that passes.
 # We define Lost of Well Clear if the distance between aircraft is less than 2200 ft.
 LODWC_REWARD = -0.3             # Negative reward (penalty) for Lost of Well Clear.
 TURN_ACTION_REWARD = -0.00001   # Negative reward (penalty) for every turn action.

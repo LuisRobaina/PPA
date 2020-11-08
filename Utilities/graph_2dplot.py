@@ -1,3 +1,6 @@
+"""
+Generate a 2D plot of the position of the ownship and intruder.
+"""
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -5,7 +8,7 @@ import argparse
 
 matplotlib.use('Agg')
 
-parser = argparse.ArgumentParser(description='***')
+parser = argparse.ArgumentParser(description='')
 parser.add_argument('-o', action="store", dest='own', default=False)
 parser.add_argument('-i', action='store', dest='int', default=None)
 
@@ -29,5 +32,6 @@ plt.xticks(np.arange(min(x), max(x)+1, 500.0))
 plt.ylim(-21000, 5)
 plt.scatter(x, y, c=colors)
 
+# Output png file.
 plt.savefig('2Dscatter.png')
 
