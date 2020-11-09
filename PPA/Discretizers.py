@@ -28,9 +28,9 @@ def setUpdiscretizers():
         The number of bins used for every feature type directly influences the performance of the algorithm
         both in training time (larger state space)  and quality of maneuvers.
     """
-    distance_bins = 121     # 42 #
-    angle_bins = 72     # 72 #
-    speed_bins = 57     # 28 #
+    distance_bins = DISTANCE_BINS
+    angle_bins = ANGLE_BINS
+    speed_bins = SPEED_BINS
 
     # Generate the discretizer objects using KBinsDiscretizer module.
     # Refer to sklearn KBinsDiscretizers documentation for discretizer types and options.

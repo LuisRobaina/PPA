@@ -3,7 +3,7 @@ import os
 # Algorithm's Constants:
 # Refer to README for more details about rewards/penalties.
 TIME_INCREMENT = 1.0           # Seconds that each action will runs for (During training)
-TEST_TIME_INCREMENT = 1.0      # Seconds that each action will run for (During testing)
+TEST_TIME_INCREMENT = 10.0      # Seconds that each action will run for (During testing)
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination.
@@ -62,3 +62,11 @@ MAX_SPEED = 287               # About 170 knot (ft/sec).
 
 MIN_ANGLE = -180              # (deg).
 MAX_ANGLE = 180               # (deg).
+
+"""
+The number of bins used for every feature type directly influences the performance of the algorithm
+both in training time (larger state space)  and quality of maneuvers.
+"""
+DISTANCE_BINS = 121     # 42 #
+ANGLE_BINS = 72     # 72 #
+SPEED_BINS = 57     # 28 #

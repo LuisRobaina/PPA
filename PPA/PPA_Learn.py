@@ -234,14 +234,20 @@ if __name__ == "__main__":
     info_str = f'''
         ***********PPA TRAINING PARAMETERS**********
 
-            STATE SPACE SIZE = {space_size_str}
             # MCTS ITERATIONS = {MCTS_ITERATIONS} 
             GAMMA = {GAMMA}
             EPISODE LENGTH = {EPISODE_LENGTH}
             EXPLORATION FACTOR (C) = {UCB1_C}
             TIME INCREMENT = {TIME_INCREMENT}
             TRAINING SET = {TRAINING_SET}
+            
+                DISCRETE BINS
+            ---------------------
+            DISTANCE BINS = {DISTANCE_BINS}
+            SPEED BINS = {SPEED_BINS}
+            ANGLE BINS = {ANGLE_BINS}
 
+            STATE SPACE SIZE = {space_size_str}
         ********************************************
     '''
     print(info_str)

@@ -165,10 +165,31 @@ if __name__ == "__main__":
     ENCOUNTERS_GEOMETRIES = pd.read_csv(ENCOUNTER_DIR, header=0)
     NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)  # Count the number of rows in set of encounters.
 
-    print("Testing on ", NUMBER_OF_ENCOUNTERS, " encounters.")
-
     # Retrieve discretizers:
     distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
+
+    space_size_str = "{:e}".format(space_size)
+    info_str = f'''
+            ***********PPA TEST PARAMETERS***************
+            Testing on  {NUMBER_OF_ENCOUNTERS} encounters
+
+            TIME INCREMENT = {TEST_TIME_INCREMENT}
+            TRAINING SET = {ENCOUNTER_DIR}
+
+                DISCRETE BINS
+                ---------------------
+                DISTANCE BINS = {DISTANCE_BINS}
+                SPEED BINS = {SPEED_BINS}
+                ANGLE BINS = {ANGLE_BINS}
+
+            STATE SPACE SIZE = {space_size_str}
+
+            STATE DISCRETIZATION MUST 
+            MATCH DISCRETIZATION USED DURING TRAINING
+            *********************************************
+        '''
+    print(info_str)
+    input("Press Enter to Run...")
 
     # Set of StateActionQN that represent the model.
     Learned_Model = []
@@ -202,6 +223,7 @@ if __name__ == "__main__":
     results_str = f"""
     ************************************************************************************************
                                             PPA TEST REPORT
+    ************************************************************************************************
         PASSED =  {passedTests}
         FAILED = {failedTests}
 
