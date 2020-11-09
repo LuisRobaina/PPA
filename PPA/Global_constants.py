@@ -2,8 +2,8 @@ import os
 
 # Algorithm's Constants:
 # Refer to README for more details about rewards/penalties.
-TIME_INCREMENT = 1.0           # Seconds that each action will runs for (During training)
-TEST_TIME_INCREMENT = 10.0      # Seconds that each action will run for (During testing)
+TIME_INCREMENT = 5.0           # Seconds that each action will runs for (During training)
+TEST_TIME_INCREMENT = 5.0      # Seconds that each action will run for (During testing)
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination.
@@ -15,7 +15,7 @@ TURN_ACTION_REWARD = -0.00001   # Negative reward (penalty) for every turn actio
 # Final State Constants:
 DWC_DIST = 2200                 # (ft) Well Clear distance.
 
-DESTINATION_DIST_ERROR = 100    # (ft) Max distance from the destination which is considered Destination Reached.
+DESTINATION_DIST_ERROR = 200    # (ft) Max distance from the destination which is considered Destination Reached.
 
 # Prev value = 51660
 ABANDON_STATE_ERROR = 30000     # (ft) Distance which if exceed results on an abandon state.
@@ -67,6 +67,6 @@ MAX_ANGLE = 180               # (deg).
 The number of bins used for every feature type directly influences the performance of the algorithm
 both in training time (larger state space)  and quality of maneuvers.
 """
-DISTANCE_BINS = 121     # 42 #
-ANGLE_BINS = 72     # 72 #
-SPEED_BINS = 57     # 28 #
+DISTANCE_BINS = 60  #  121 # 42 #
+ANGLE_BINS = 36     # 72 #
+SPEED_BINS = 20     # 28 #
