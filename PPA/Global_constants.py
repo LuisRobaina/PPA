@@ -2,8 +2,8 @@ import os
 
 # Algorithm's Constants:
 # Refer to README for more details about rewards/penalties.
-TIME_INCREMENT = 10.0           # Seconds that each action will runs for (During training)
-TEST_TIME_INCREMENT = 10.0      # Seconds that each action will run for (During testing)
+TIME_INCREMENT = 1.0           # Seconds that each action will runs for (During training)
+TEST_TIME_INCREMENT = 1.0      # Seconds that each action will run for (During testing)
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination.
@@ -15,7 +15,7 @@ TURN_ACTION_REWARD = -0.00001   # Negative reward (penalty) for every turn actio
 # Final State Constants:
 DWC_DIST = 2200                 # (ft) Well Clear distance.
 
-DESTINATION_DIST_ERROR = 500    # (ft) Max distance from the destination which is considered Destination Reached.
+DESTINATION_DIST_ERROR = 100    # (ft) Max distance from the destination which is considered Destination Reached.
 
 # Prev value = 51660
 ABANDON_STATE_ERROR = 30000     # (ft) Distance which if exceed results on an abandon state.
@@ -37,7 +37,7 @@ MCTS_ITERATIONS = 10000
 # If a cut is not desired set MCTS_CUT = 1. Then every MCTS will go for MCTS_ITERATIONS.
 MCTS_CUT = 1000
 
-UCB1_C = 2                      # UCB1 Exploration term.
+UCB1_C = 3                      # UCB1 Exploration term.
 GAMMA = 0.9                     # Discount Factor.
 
 # Max number of actions that can be taken when simulating for Performance.
@@ -45,7 +45,7 @@ EPISODE_LENGTH = None
 
 # Directory Paths:
 # Set of Training Encounters.
-TRAINING_SET = 'PPA/Training Encounters/Test_Encounter_Geometries2.csv'
+TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
 # Directory where each encounter description/trajectory will be placed.
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 

@@ -64,6 +64,7 @@ class StateActionQN:
 
             # Update number of visits to this action.
             self.LEFT_N += 1
+
         elif action is "RIGHT":
 
             if self.RIGHT_N == 0:
@@ -80,7 +81,7 @@ class StateActionQN:
 
         elif action is "NO_TURN":
 
-            if self.N == 0:
+            if self.NO_TURN_N == 0:
                 # First Q value for this action.
                 self.NO_TURN_Q = New_Q
                 
@@ -95,7 +96,6 @@ class StateActionQN:
     def __str__(self):
         return f'''
             [discrete_state = {self.discrete_state}]
-            N(Updates) = {self.N}
             LEFT_Q = {"{:e}".format(self.LEFT_Q)},
             RIGHT_Q = {"{:e}".format(self.RIGHT_Q)},
             NO_TURN_Q = {"{:e}".format(self.NO_TURN_Q)}

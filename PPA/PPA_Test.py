@@ -8,7 +8,7 @@ encounter directory for later analysis.
 """
 from PPA.MCTS import *
 from PPA.StateActionQN import *
-from PPA.global_constants import *
+from PPA.Global_constants import *
 import pandas as pd
 import csv
 import pickle

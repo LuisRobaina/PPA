@@ -1,7 +1,7 @@
 # libraries
 import matplotlib.pyplot as plt
 import pickle
-from PPA.global_constants import *
+from PPA.Global_constants import *
 
 options_prompt = f"""
     ************************************************************************************************

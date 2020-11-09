@@ -2,7 +2,7 @@
 Discretizers.py implements methods to discretize a local state.
 """
 
-from PPA.global_constants import *
+from PPA.Global_constants import *
 import numpy as np
 # Refer to sklearn pre-processing KBinsDiscretizer for details about discretization.
 from sklearn.preprocessing import KBinsDiscretizer
@@ -18,7 +18,7 @@ def setUpdiscretizers():
     """
 
     # Generate the range of integer values for features: Defines all values to consider in discretization.
-    # Depends on the MAX and MIN values set in global_constants.py
+    # Depends on the MAX and MIN values set in Global_constants.py
     range_distance = (np.array([[x for x in range(MIN_DISTANCE, MAX_DISTANCE + 1)]])).T
     range_angle = (np.array([[x for x in range(MIN_ANGLE, MAX_ANGLE + 1)]])).T
     range_speed = (np.array([[x for x in range(MIN_SPEED, MAX_SPEED + 1)]])).T

@@ -1,4 +1,4 @@
-from PPA.global_constants import *
+from PPA.Global_constants import *
 import math
 import numpy as np
 from numpy import linalg as LA

@@ -6,7 +6,7 @@ from PPA.MCTS import *
 from PPA.StateActionQN import *
 import pickle
 from PPA.State import *
-from PPA.global_constants import *
+from PPA.Global_constants import *
 
 
 # Set of StateActionQN objects that represent the learned model.
@@ -24,10 +24,6 @@ TRAINING_NUMBER = 0
 def learnFromEncounter(encounter_directory, encounter_index):
     """
     Given the directory to an encounter, learn from it.
-    :param encounter_directory:
-    :param encounter_index:
-    :param mcts:
-    :return:
     """
     global last_model_index
 
@@ -39,12 +35,16 @@ def learnFromEncounter(encounter_directory, encounter_index):
     try:
         assert (encounter_state.get_distance() >= DWC_DIST)
     except AssertionError:
-        print("(DWC_DIST ERROR): SKIPPED ENCOUNTER", encounter_index)
+        log_str = f'''
+            (DWC_DIST ERROR): SKIPPED ENCOUNTER {encounter_index}
+            The two aircraft's initial positions is not separated by at least the well clear.
+        '''
+        print(log_str)
         return
 
     # Generate a Monte Carlo Tree Search with initial state at this initial encounter state.
     mcts = MCST(encounter_state)
-    
+
     # Perform selection, expansion, and simulation procedures MCTS_ITERATIONS times.
     """
         For each iteration of the SELECT, EXPAND, and SIMULATE procedure
@@ -128,7 +128,6 @@ def runEncounters():
     """
     Given the set of training encounters specified in globlal_constants -- TRAINING_SET, iterate over each
     encounter and run MCTS.
-    :return:
     """
 
     global PATH, TRAINING_NUMBER
@@ -174,7 +173,6 @@ def constructPathWhileLearning(initial_state: State, last_model_index):
     :param initial_state: Initial state for the trajectory
     :param last_model_index: Used to point to the last checked model object, when new state,action pairs are added
                              to the model only check the recently added  (Avoid checking the whole model list).
-    :return:
     """
 
     current_state = initial_state
@@ -200,15 +198,19 @@ def constructPathWhileLearning(initial_state: State, last_model_index):
                 current_state = getNewState(current_state, action, TIME_INCREMENT)
                 break
         if not model_has_state:
+            print('UNKNOWN_STATE')
             return -1  # Valid trajectory couldn't be constructed: Missing the current state in model.
-    # loop ends: Reached a final state.
+
+    # loop ends when reaches a final state.
 
     """
         What final state did the agent reached?
+        
         Possible final states return values: 
-        DESTINATION_STATE_REWARD: Close enough to the destination(Success!)
-        ABANDON_STATE_REWARD: Too far from destination (Fails)
-        LODWC_REWARD: Lost of well clear (Fails).
+        DESTINATION_STATE_REWARD =  Close enough to the destination(Success!)
+        ABANDON_STATE_REWARD = Too far from destination (Fails)
+        LODWC_REWARD = Lost of well clear (Fails).
+        
     """
     reward = isTerminalState(current_state)
     if reward is DESTINATION_STATE_REWARD:
@@ -253,11 +255,11 @@ if __name__ == "__main__":
     Open a file, where you want to store the model.
     This file can be loaded and used with PPA_Test.py to evaluate the  performance of the model.
     """
-
     model_str = f'model-{TRAINING_NUMBER}.pickle'
     file = open(model_str, 'wb')
-    # dump model information to that file.
+
+    # Dump all the learned model information to the file.
     pickle.dump(Learned_Model, file)
 
-    # close the file
+    # Close the file
     file.close()
