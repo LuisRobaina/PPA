@@ -148,7 +148,7 @@ class MCST:
         :param mcst_node: A selected node that does not have all 3 children expanded.
         """
 
-        while True: # Randomly pick a non expanded node.
+        while True:     # Randomly pick a non expanded node.
             rand_num = random.random()
             if rand_num < 0.33 and mcst_node.no_turn is None:
                 # Expand to the no_turn state.                              

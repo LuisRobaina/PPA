@@ -2,14 +2,16 @@ import os
 
 # Algorithm's Constants:
 # Refer to README for more details about rewards/penalties.
-TIME_INCREMENT = 5.0           # Seconds that each action will runs for (During training)
-TEST_TIME_INCREMENT = 5.0      # Seconds that each action will run for (During testing)
+
+TIME_INCREMENT = 5.0            # Seconds that each action will runs for (During training)
+TEST_TIME_INCREMENT = 5.0       # Seconds that each action will run for (During testing)
+
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination.
 ABANDON_STATE_REWARD = -0.5     # Negative reward (a penalty) if ownship reaches state too far from destination.
 # We define Lost of Well Clear if the distance between aircraft is less than 2200 ft.
-LODWC_REWARD = -0.3             # Negative reward (penalty) for Lost of Well Clear.
+LODWC_REWARD = -0.8             # Negative reward (penalty) for Lost of Well Clear.
 TURN_ACTION_REWARD = -0.00001   # Negative reward (penalty) for every turn action.
 
 # Final State Constants:
@@ -45,7 +47,7 @@ EPISODE_LENGTH = None
 
 # Directory Paths:
 # Set of Training Encounters.
-TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
+TRAINING_SET = 'PPA/Training Encounters/Test_Encounter_Geometries2.csv'
 # Directory where each encounter description/trajectory will be placed.
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 
@@ -65,8 +67,8 @@ MAX_ANGLE = 180               # (deg).
 
 """
 The number of bins used for every feature type directly influences the performance of the algorithm
-both in training time (larger state space)  and quality of maneuvers.
+both in training time (larger state space) and quality of maneuvers.
 """
-DISTANCE_BINS = 60  #  121 # 42 #
-ANGLE_BINS = 36     # 72 #
-SPEED_BINS = 20     # 28 #
+DISTANCE_BINS = 60 # 121
+ANGLE_BINS = 36     # 72
+SPEED_BINS = 20     # 57

@@ -132,18 +132,18 @@ def computeInitialState(encounter_properties: dict) -> State:
     
     # Let the angle between delta_vel_t0 and delta_post_t0 be theta.
     cos_theta = -time_to_CPA * math.sqrt(delta_vel_magnitud**2) / delta_pos_magnitud
-    sin_theta_2 = 1 - cos_theta**2;
-    
+    sin_theta_2 = 1 - cos_theta**2
+
     if sin_theta_2 < 0 and sin_theta_2 > -1e-15:
         sin_theta_2 = 0
     
-    sin_theta = math.sqrt(sin_theta_2);
+    sin_theta = math.sqrt(sin_theta_2)
 
     # Given the angle we can rotate delta_vel_t0 to get delta_post_t0:
     # Clock-wise rotation.
     rotation_matrix = np.array([
-        [cos_theta, -sin_theta],
-        [sin_theta, cos_theta]
+        [cos_theta, sin_theta],
+        [-sin_theta, cos_theta]
     ])
     delta_post_t0 = (rotation_matrix@delta_vel_t0)*delta_pos_magnitud/delta_vel_magnitud
     
@@ -163,8 +163,8 @@ def computeInitialState(encounter_properties: dict) -> State:
     else:
         # Perform Counter-clock wise rotation.
         rotation_matrix = np.array([ 
-            [cos_theta, sin_theta],
-            [-sin_theta,  cos_theta]
+            [cos_theta, -sin_theta],
+            [sin_theta,  cos_theta]
         ])
         delta_post_t0 = (rotation_matrix@delta_vel_t0)*delta_pos_magnitud/delta_vel_magnitud
         intruder_pos = ownship_pos + delta_post_t0
@@ -189,6 +189,7 @@ def getNewState(state: State, action, TIME):
         new_vel_own = ownship_vel   # [v_x,v_y] (ft/sec).
 
     else:
+
         theta = 5   # degrees.
         cos_theta = math.cos(math.radians(theta))
         sin_theta = math.sin(math.radians(theta))
@@ -196,16 +197,16 @@ def getNewState(state: State, action, TIME):
         if action is 'LEFT':
             # Perform Counter-clock wise rotation.
             rotation_matrix = np.array([ 
-                [cos_theta, sin_theta],
-                [-sin_theta,  cos_theta]
+                [cos_theta, -sin_theta],
+                [sin_theta,  cos_theta]
             ])
             new_vel_own = rotation_matrix@ownship_vel
 
         elif action is 'RIGHT':
             # Perform clock-wise rotation.
             rotation_matrix = np.array([
-                [cos_theta, -sin_theta],
-                [sin_theta, cos_theta]
+                [cos_theta, sin_theta],
+                [-sin_theta, cos_theta]
             ])
             new_vel_own = rotation_matrix@ownship_vel
     

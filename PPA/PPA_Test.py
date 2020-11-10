@@ -60,7 +60,7 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
             if model_lookup == state_in_model:  # Same discrete local state.
                 model_has_state = True
                 action = state_in_model.getBestAction()
-                # Log action taken.
+                # Log the action taken.
                 print("TOOK ACTION: ", action)
                 current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)
                 trajectory_states.append(current_state)
@@ -170,11 +170,11 @@ if __name__ == "__main__":
 
     space_size_str = "{:e}".format(space_size)
     info_str = f'''
-            ***********PPA TEST PARAMETERS***************
+            ************PPA TEST PARAMETERS***************
             Testing on  {NUMBER_OF_ENCOUNTERS} encounters
 
             TIME INCREMENT = {TEST_TIME_INCREMENT}
-            TRAINING SET = {ENCOUNTER_DIR}
+            TESTING SET = {ENCOUNTER_DIR}
 
                 DISCRETE BINS
                 ---------------------
@@ -182,10 +182,16 @@ if __name__ == "__main__":
                 SPEED BINS = {SPEED_BINS}
                 ANGLE BINS = {ANGLE_BINS}
 
-            STATE SPACE SIZE = {space_size_str}
+                STATE SPACE SIZE = {space_size_str}
 
             STATE DISCRETIZATION MUST 
             MATCH DISCRETIZATION USED DURING TRAINING
+
+                Final State Constants
+                ---------------------
+                DWC_DIST = {DWC_DIST}
+                DESTINATION_DIST_ERROR = {DESTINATION_DIST_ERROR}
+                ABANDON_STATE_ERROR = {ABANDON_STATE_ERROR}
             *********************************************
         '''
     print(info_str)

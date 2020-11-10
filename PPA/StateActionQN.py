@@ -22,7 +22,7 @@ class StateActionQN:
         # The expected reward for taking a right turn.
         self.RIGHT_Q = 0
 
-        # Number of times I have visited this
+        # Number of times a child state has been visited.
         self.NO_TURN_N = 0
         self.LEFT_N = 0
         self.RIGHT_N = 0
@@ -32,10 +32,9 @@ class StateActionQN:
     
     def getBestAction(self):
         """
-        Return the action with the highest expected reward.
-        :return:
+        Returns the action with the highest expected reward.
         """
-        actions = ['LEFT','NO_TURN','RIGHT']
+        actions = ['LEFT', 'NO_TURN', 'RIGHT']
         # The set of Q values for the actions.
         actionsQ = [self.LEFT_Q, self.NO_TURN_Q, self.RIGHT_Q]
         

@@ -232,29 +232,44 @@ if __name__ == "__main__":
     space_size_str = "{:e}".format(space_size)
     # Print useful information about the hyper-parameters.
     info_str = f'''
-        ***********PPA TRAINING PARAMETERS**********
-
-            # MCTS ITERATIONS = {MCTS_ITERATIONS} 
-            GAMMA = {GAMMA}
-            EPISODE LENGTH = {EPISODE_LENGTH}
-            EXPLORATION FACTOR (C) = {UCB1_C}
-            TIME INCREMENT = {TIME_INCREMENT}
-            TRAINING SET = {TRAINING_SET}
-            
-                DISCRETE BINS
-            ---------------------
-            DISTANCE BINS = {DISTANCE_BINS}
-            SPEED BINS = {SPEED_BINS}
-            ANGLE BINS = {ANGLE_BINS}
-
-            STATE SPACE SIZE = {space_size_str}
-        ********************************************
+        *************************PPA TRAINING PARAMETERS********************
+        *                                               
+        *    # MCTS ITERATIONS = {MCTS_ITERATIONS}  
+        *    GAMMA = {GAMMA}                        
+        *    EPISODE LENGTH = {EPISODE_LENGTH}      
+        *    EXPLORATION FACTOR (C) = {UCB1_C}      
+        *    TIME INCREMENT = {TIME_INCREMENT}     
+        *    TRAINING SET = {TRAINING_SET}          
+        *                                           
+        *               DISCRETE BINS                
+        *    ------------------------------------        
+        *    DISTANCE BINS = {DISTANCE_BINS}        
+        *    SPEED BINS = {SPEED_BINS}              
+        *    ANGLE BINS = {ANGLE_BINS}              
+        *                                           
+        *    STATE SPACE SIZE = {space_size_str}
+        *
+        *            Final State Constants
+        *     -------------------------------------
+        *     DWC_DIST = {DWC_DIST}
+        *     DESTINATION_DIST_ERROR = {DESTINATION_DIST_ERROR}
+        *     ABANDON_STATE_ERROR = {ABANDON_STATE_ERROR}
+        *      
+        *            Rewards/Penalties Constants
+        *     -------------------------------------
+        *     DESTINATION_STATE_REWARD = {DESTINATION_STATE_REWARD}
+        *     ABANDON_STATE_REWARD = {ABANDON_STATE_REWARD}
+        *     LODWC_REWARD = {LODWC_REWARD}
+        *     TURN_ACTION_REWARD = {TURN_ACTION_REWARD}
+        *
+        ********************************************************************
     '''
     print(info_str)
 
     # Train using the training examples.
     runEncounters()
-    # What percentage of the discrete state space did we cover.
+
+    # What percentage of the discrete state space did we cover?
     print("Final State Space Coverage (%) = ", (len(Learned_Model) / space_size) * 100)
 
     """
@@ -267,5 +282,12 @@ if __name__ == "__main__":
     # Dump all the learned model information to the file.
     pickle.dump(Learned_Model, file)
 
-    # Close the file
+    # Save the training hyper-parameters corresponding to this training set for future reference.
+    training_config_file_str = f'''Training_Parameters({model_str}).txt'''
+    training_config_file = open(training_config_file_str, 'w+')
+    training_config_file.write(info_str)
+
+    # Close the files
     file.close()
+    training_config_file.close()
+
