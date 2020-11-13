@@ -1,0 +1,17 @@
+************************************************************************************************************************
+                                        Welcome to the Path Planning Algorithm
+
+Providing Detect and Avoid Capabilities with route recapture using Reinforcement Learning via
+the Monte Carlo Tree Search.
+************************************************************************************************************************
+
+************************************************************************************************************************
+                                                   Running the Notebook
+************************************************************************************************************************
+
+To run the PPA Jupyter notebook:
+
+1. Install Jupyter: https://jupyter.org/
+2. From your terminal run: jupyter notebook
+3. Go to the PPA/Jupyter Notebooks/ directory and open Path-Planning-Algorithm.ipynb
+
