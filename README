@@ -1,0 +1,90 @@
+************************************************************************************************************************
+                                        Welcome to the Path Planning Algorithm
+
+Providing Detect and Avoid Capabilities with route recapture using Reinforcement Learning via
+the Monte Carlo Tree Search.
+************************************************************************************************************************
+
+************************************************************************************************************************
+                                                   Installation
+************************************************************************************************************************
+
+1. This program runs on Python 3.7+. Make sure you have python 3.7 or above.
+    run: python --version
+
+2. This program uses 3rd party libraries that must be installed:
+
+    2.1: Create your virtual environment (Do only once when)
+        run: python3 -m venv env (verify a directory named env was created).
+
+    2.2 Activate the virtual environment: (Do every time you log off the machine and log back in)
+        run: source env/bin/activate or source env/bin/activate.csh
+        You will see that (env) appears in from of your user name if it was successfully activated.
+    2.3 Install dependencies (Do only once)
+        run: make init
+
+
+************************************************************************************************************************
+                                                   Training
+************************************************************************************************************************
+
+1. To train a PPA model you need:
+    1.1 A set of encounter geometries csv file (Refer to PPA/Training Encounters/) for examples. Refer to PPA Jupyter
+        Notebook for explanation of encounter geometry.
+
+    1.2 Configure your hyper-parameters (Refer to PPA/Global_constants.py) to change. Refer to PPA Jupyter Notebook
+        for explanation of hyper-parameters.
+
+    1.3 run: make train-model
+
+        You will see the set of hypter-parameters you configured. Example:
+
+        *************************PPA TRAINING PARAMETERS********************
+        *
+        *    # MCTS ITERATIONS = 10000
+        *    GAMMA = 0.9
+        *    EPISODE LENGTH = None
+        *    EXPLORATION FACTOR (C) = 3
+        *    TIME INCREMENT = 5.0
+        *    TRAINING SET = PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv
+        *
+        *               DISCRETE BINS
+        *    ------------------------------------
+        *    DISTANCE BINS = 60
+        *    SPEED BINS = 20
+        *    ANGLE BINS = 36
+        *
+        *    STATE SPACE SIZE = 6.718464e+10
+        *
+        *            Final State Constants
+        *     -------------------------------------
+        *     DWC_DIST = 2200
+        *     DESTINATION_DIST_ERROR = 200
+        *     ABANDON_STATE_ERROR = 30000
+        *
+        *            Rewards/Penalties Constants
+        *     -------------------------------------
+        *     DESTINATION_STATE_REWARD = 1.0
+        *     ABANDON_STATE_REWARD = -0.5
+        *     LODWC_REWARD = -0.8
+        *     TURN_ACTION_REWARD = -1e-05
+        *
+        ********************************************************************
+
+        A file with hyper-parameter information will be created at the end of training for future reference.
+
+    1.4 You will see a folder named Test Results be created by the train-model command.
+    1.5 At the end of training a .pickle file will be generated with all the model information learned from the training.
+
+
+************************************************************************************************************************
+                                                   Testing/Evaluating
+************************************************************************************************************************
+
+1. To evaluate the performance of a model (.pickle) file generated during training you will run the command:
+
+   make test-model, you will be prompted to input:
+        a. The path to the set of encounters geometries to test the model on (csv) file.
+        b. The path to the model (.pickle) file.
+        c. The path to the results directory (where the resulting trajectories will be stored for each encounter).
+    A test report will be generated at the end.

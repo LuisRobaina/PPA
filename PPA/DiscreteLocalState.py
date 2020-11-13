@@ -21,7 +21,6 @@ class DiscreteLocalState:
         self.dis_int_ownBIN = d_i_o_bin
         # Angle intruder heading relative to ownship heading bin.
         self.theta_int_own_trackBIN = t_i_o_bin
-        # TODO: Add desc.
         self.angle_rel_vel_neg_rel_posBIN = a_r_v_p_bin
 
     def __str__(self):

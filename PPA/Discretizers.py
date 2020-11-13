@@ -93,7 +93,6 @@ def discretizeLocalState(local_state, distance_discretizer, angle_discretizer, s
     t_d_o_bin = angle_bins.T[0][0]
     # Angle Intruder heading relative to ownship heading bin.
     t_i_o_bin = angle_bins.T[0][1]
-    # TODO: Comment.
     a_r_v_p_bin = angle_bins.T[0][2]
 
     # Speed bins for ownship and intruder.
