@@ -36,7 +36,7 @@ class DiscreteLocalState:
             t_d_o_bin = {self.theta_int_own_trackBIN},
             a_r_v_p_bin = {self.angle_rel_vel_neg_rel_posBIN}
         '''
-
+    
     def __eq__(self, obj):
         """
             Two discrete states are the same if they share all bins for discrete
