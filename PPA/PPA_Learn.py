@@ -52,7 +52,7 @@ def learnFromEncounter(encounter_directory, encounter_index):
     """
     for i in range(MCTS_ITERATIONS):
 
-        # Try to construct path every 1000 iterations of MCTS: avoid over-fitting.
+        # Try to construct path every MCTS_CUT iterations of MCTS: avoid over-fitting and smaller training time.
         if i % MCTS_CUT == 0:
 
             # Empty the set of (state, action, reward):
@@ -65,7 +65,7 @@ def learnFromEncounter(encounter_directory, encounter_index):
             # Try to construct a path with the current model.
             result = constructPathWhileLearning(encounter_state, last_model_index)
             if result == 0:
-                print("SUCCESS PATH")
+                print("SUCCESS TRAJ")
                 return
             last_model_index = len(Learned_Model)
 
@@ -177,7 +177,7 @@ def constructPathWhileLearning(initial_state: State, last_model_index):
 
     current_state = initial_state
     # Begin to construct a trajectory
-    while isTerminalState(current_state) == 0: # A return of 0 means the current state is not final.
+    while isTerminalState(current_state) == 0:  # A return of 0 means the current state is not final.
         # Assume this specific state is not modeled in memory yet.
         model_has_state = False
         # Convert to a local state.
@@ -198,7 +198,7 @@ def constructPathWhileLearning(initial_state: State, last_model_index):
                 current_state = getNewState(current_state, action, TIME_INCREMENT)
                 break
         if not model_has_state:
-            print('UNKNOWN_STATE')
+            # print('UNKNOWN_STATE')
             return -1  # Valid trajectory couldn't be constructed: Missing the current state in model.
 
     # loop ends when reaches a final state.

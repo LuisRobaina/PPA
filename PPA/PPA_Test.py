@@ -23,7 +23,7 @@ AbandonStateCount = 0
 # Keep track of encounters and their results by categories
 SUCCESS_LIST = []       # Successful encounters.
 LODWC_LIST = []         # Encounters that resulted in Lost Of Well Clear.
-UNKNOWNSTATE_LIST = []  # Encounters that resulted in an Un-modeled state.
+UNKNOWNSTATE_LIST = []  # Encounters that resulted in an un-modeled state.
 ABANDONSTATE_LIST = []  # Encounters that resulted in an Abandon state.
 
 
