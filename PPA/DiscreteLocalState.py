@@ -37,6 +37,16 @@ class DiscreteLocalState:
             a_r_v_p_bin = {self.angle_rel_vel_neg_rel_posBIN}
         '''
     
+    def __hash__(self):
+        # Return hash of the tuple of features.
+        return hash((self.dis_ownship_destBIN,
+                    self.theta_destintation_ownshipBIN,
+                    self.ownship_velBIN,
+                    self.intruder_velBIN,
+                    self.dis_int_ownBIN,
+                    self.theta_int_own_trackBIN,
+                    self.angle_rel_vel_neg_rel_posBIN))
+
     def __eq__(self, obj):
         """
             Two discrete states are the same if they share all bins for discrete

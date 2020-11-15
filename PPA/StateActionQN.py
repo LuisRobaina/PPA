@@ -100,5 +100,8 @@ class StateActionQN:
             NO_TURN_Q = {"{:e}".format(self.NO_TURN_Q)}
         '''
 
+    def __hash__(self):
+        return hash(self.discrete_state)
+        
     def __eq__(self, obj):
         return isinstance(obj, StateActionQN) and obj.discrete_state == self.discrete_state

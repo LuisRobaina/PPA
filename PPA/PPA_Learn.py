@@ -10,12 +10,11 @@ from PPA.Global_constants import *
 
 
 # Set of StateActionQN objects that represent the learned model.
-Learned_Model = []
+Learned_Model = {}
+states_modeled = 0
 
 # Retrieve discretizers to use during training.
 distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
-
-last_model_index = 0
 
 # Used to keep track of the training number when creating a results directory.
 TRAINING_NUMBER = 0
@@ -25,7 +24,7 @@ def learnFromEncounter(encounter_directory, encounter_index):
     """
     Given the directory to an encounter, learn from it.
     """
-    global last_model_index
+    global states_modeled
 
     print("LEARNING  FROM ", encounter_directory)
 
@@ -61,23 +60,20 @@ def learnFromEncounter(encounter_directory, encounter_index):
             mcts.getStateActionRewards(mcts.root)
             # Add/Update model objects.
             addModelObjects(mcts)
-            print("STATES MODELED: ", len(Learned_Model))
             # Try to construct a path with the current model.
-            result = constructPathWhileLearning(encounter_state, last_model_index)
+            result = constructPathWhileLearning(encounter_state)
             if result == 0:
                 print("SUCCESS TRAJ")
                 return
-            last_model_index = len(Learned_Model)
-
+        
         """
             Run Monte Carlo Tree Search:
         """
         selected_state = mcts.selection()
         mcts.expansion(selected_state)
         mcts.simulate()
-
-    last_model_index = 0
-
+    
+    print("STATES MODELED: ", states_modeled)
 
 def addModelObjects(mcts):
     """
@@ -86,15 +82,14 @@ def addModelObjects(mcts):
     :param mcts: The tree with the (state,action,rewards) tuples.
     """
 
+    global states_modeled
+    
     # The set of state,action,rewards that agent learnt from this encounter's iteration.
     for state, action, reward in mcts.state_action_reward:
 
         if reward == 0:
             # This is a non expanded child - No knowledge about its Q value.
             continue
-
-        # Assume this state,action pair in not modeled.
-        already_in_model = False
 
         # Convert state to a local state.
         localstate = convertAbsToLocal(state)
@@ -105,24 +100,33 @@ def addModelObjects(mcts):
                                                     speed_discretizer)
         # Generate a discrete model object.
         stateActionQN = StateActionQN(discrete_local_state, action, reward)
+        
+        # Compute the hash of this discrete state.
+        stateActionQN_hash = hash(StateActionQN)
 
-        for state_in_model in Learned_Model:
-            # Check the model object is currently in memory:
-            if state_in_model == stateActionQN:
-                """
-                    This discrete local state already
-                    exists in our model: Update our 
-                    knowledge about its Q value by averaging.
-                """
-                state_in_model.update(action, reward)
-                already_in_model = True
-                break
-
-        if already_in_model is True:
-            continue
-        # Add new Model Object.
-        Learned_Model.append(stateActionQN)
-
+        state_exists = False
+        # If exact same discrete state is in the hash table update it
+        try:
+            # Linear search this chain of discrete states to see if we find 
+            # an identical discrete state.
+            for d_state in Learned_Model[stateActionQN_hash]:
+                if d_state == stateActionQN:
+                    state_exists = True
+                    """
+                        This discrete local state already
+                        exists in our model: Update our 
+                        knowledge about its Q value by averaging.
+                    """
+                    d_state.update(action, reward)
+                    break
+        
+            # Append new discrete state to the chain
+            if not state_exists:
+                states_modeled += 1
+                Learned_Model[stateActionQN_hash].append(stateActionQN)
+        except KeyError:
+            # First state hashed to this hash key.
+            Learned_Model[stateActionQN_hash] = [stateActionQN]
 
 def runEncounters():
     """
@@ -167,12 +171,10 @@ def runEncounters():
             learnFromEncounter(ENCOUNTER_PATH, encounter_index)
 
 
-def constructPathWhileLearning(initial_state: State, last_model_index):
+def constructPathWhileLearning(initial_state: State):
     """
     After a number of iterations of MCTS for a given encounter, try to construct a trajectory using the current model.
     :param initial_state: Initial state for the trajectory
-    :param last_model_index: Used to point to the last checked model object, when new state,action pairs are added
-                             to the model only check the recently added  (Avoid checking the whole model list).
     """
 
     current_state = initial_state
@@ -190,14 +192,14 @@ def constructPathWhileLearning(initial_state: State, last_model_index):
 
         # Generate a dummy model object for comparison purposes.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
-        # Iterate over the set of modeled objects.
-        for state_in_model in Learned_Model[last_model_index:]:
-            if model_lookup == state_in_model:  # same discrete local state.
-                model_has_state = True
-                action = state_in_model.getBestAction()
-                current_state = getNewState(current_state, action, TIME_INCREMENT)
-                break
-        if not model_has_state:
+        # hash dummy model object
+        model_lookup_hash = hash(model_lookup)
+        try:
+            for d_state in Learned_Model[model_lookup_hash]:
+                if d_state == model_lookup: # same discrete local state
+                    action = d_state.getBestAction()
+                    current_state = getNewState(current_state, action, TIME_INCREMENT)        
+        except KeyError:
             # print('UNKNOWN_STATE')
             return -1  # Valid trajectory couldn't be constructed: Missing the current state in model.
 
