@@ -36,7 +36,6 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
     """
     global UnknownStateCount, AbandonStateCount, LODWCCount
 
-    # Log
     print("TRAJ FOR:", encounter_path)
 
     trajectory_states = [initial_state]
@@ -55,25 +54,31 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
                                                             speed_discretizer)
         
         # Generate model object.
+        model_lookup = StateActionQN(current_discrete_local_state, '', 0)        
+        # Generate a dummy model object for comparison purposes.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
-        for state_in_model in Learned_Model:
-            if model_lookup == state_in_model:  # Same discrete local state.
-                model_has_state = True
-                action = state_in_model.getBestAction()
-                # Log the action taken.
-                print("TOOK ACTION: ", action)
-                current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)
-                trajectory_states.append(current_state)
-                break
+        # hash dummy model object
+        model_lookup_hash = hash(model_lookup)
+        try:
+            for d_state in Learned_Model[model_lookup_hash]:
+                if d_state == model_lookup: # same discrete local state
+                    action = d_state.getBestAction()
+                    # Log the action taken.
+                    print("TOOK ACTION: ", action)
+                    current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)   
+                    trajectory_states.append(current_state)
+                    model_has_state = True
+                    break
+            if not model_has_state:
+                raise KeyError
         
-        if not model_has_state:
+        except KeyError:
             print('STATE_NOT_MODELED')
             UNKNOWNSTATE_LIST.append(encounter_index)
             UnknownStateCount += 1
-
             writeTraj(encounter_path, trajectory_states)
             return -1   # Path couldn't be constructed missing states in model.
-    
+                
     # What final state did we reach?
     """
         Possible final states return values: 

@@ -11,6 +11,7 @@ from PPA.Global_constants import *
 
 # Set of StateActionQN objects that represent the learned model.
 Learned_Model = {}
+# Keep track of how many discrete states the model contains.
 states_modeled = 0
 
 # Retrieve discretizers to use during training.
@@ -26,7 +27,7 @@ def learnFromEncounter(encounter_directory, encounter_index):
     """
     global states_modeled
 
-    print("LEARNING  FROM ", encounter_directory)
+    print("LEARNING FROM ", encounter_directory)
 
     encounter_state = getInitStateFromEncounter(encounter_directory, encounter_index)
 
@@ -53,7 +54,6 @@ def learnFromEncounter(encounter_directory, encounter_index):
 
         # Try to construct path every MCTS_CUT iterations of MCTS: avoid over-fitting and smaller training time.
         if i % MCTS_CUT == 0:
-
             # Empty the set of (state, action, reward):
             mcts.state_action_reward = []
             # Get State,Action,Rewards for states that updated in the last 1000 iterations.
@@ -63,14 +63,16 @@ def learnFromEncounter(encounter_directory, encounter_index):
             # Try to construct a path with the current model.
             result = constructPathWhileLearning(encounter_state)
             if result == 0:
-                print("SUCCESS TRAJ")
+                print("SUCCESS TRAJ.")
                 return
-        
         """
-            Run Monte Carlo Tree Search:
+            Run Monte Carlo Tree Search.
         """
+        # Selection
         selected_state = mcts.selection()
+        # Expansion
         mcts.expansion(selected_state)
+        # Simulation
         mcts.simulate()
     
     print("STATES MODELED: ", states_modeled)
@@ -81,14 +83,13 @@ def addModelObjects(mcts):
     to the model. If a state is already  in the model update its Q and N values for the given action by averaging.
     :param mcts: The tree with the (state,action,rewards) tuples.
     """
-
     global states_modeled
     
-    # The set of state,action,rewards that agent learnt from this encounter's iteration.
+    # The set of state, action, rewards that agent learned from this encounter's MCTS iterations.
     for state, action, reward in mcts.state_action_reward:
 
         if reward == 0:
-            # This is a non expanded child - No knowledge about its Q value.
+            # This is a non expanded child - There is no knowledge about its Q value.
             continue
 
         # Convert state to a local state.
@@ -101,14 +102,13 @@ def addModelObjects(mcts):
         # Generate a discrete model object.
         stateActionQN = StateActionQN(discrete_local_state, action, reward)
         
-        # Compute the hash of this discrete state.
+        # Compute the hash value of this discrete state.
         stateActionQN_hash = hash(StateActionQN)
 
         state_exists = False
-        # If exact same discrete state is in the hash table update it
         try:
-            # Linear search this chain of discrete states to see if we find 
-            # an identical discrete state.
+            # Linear search the chain of discrete states with this hash value
+            # to see if we find an identical discrete state.
             for d_state in Learned_Model[stateActionQN_hash]:
                 if d_state == stateActionQN:
                     state_exists = True
@@ -119,13 +119,12 @@ def addModelObjects(mcts):
                     """
                     d_state.update(action, reward)
                     break
-        
-            # Append new discrete state to the chain
+            # No identical state found: Append new discrete state to the chain.
             if not state_exists:
                 states_modeled += 1
-                Learned_Model[stateActionQN_hash].append(stateActionQN)
+                Learned_Model[stateActionQN_hash].append(stateActionQN)     
         except KeyError:
-            # First state hashed to this hash key.
+            # First state that hashed to this hash key.
             Learned_Model[stateActionQN_hash] = [stateActionQN]
 
 def runEncounters():
@@ -198,18 +197,20 @@ def constructPathWhileLearning(initial_state: State):
             for d_state in Learned_Model[model_lookup_hash]:
                 if d_state == model_lookup: # same discrete local state
                     action = d_state.getBestAction()
-                    current_state = getNewState(current_state, action, TIME_INCREMENT)        
+                    current_state = getNewState(current_state, action, TIME_INCREMENT)
+                    model_has_state = True
+                    break
+            if not model_has_state:
+                return -1  # Valid trajectory couldn't be constructed: Missing the current state in model.
         except KeyError:
-            # print('UNKNOWN_STATE')
             return -1  # Valid trajectory couldn't be constructed: Missing the current state in model.
-
+    
     # loop ends when reaches a final state.
-
     """
-        What final state did the agent reached?
+        What final state did the agent reach?
         
         Possible final states return values: 
-        DESTINATION_STATE_REWARD =  Close enough to the destination(Success!)
+        DESTINATION_STATE_REWARD =  Close enough to the destination (Success!)
         ABANDON_STATE_REWARD = Too far from destination (Fails)
         LODWC_REWARD = Lost of well clear (Fails).
         
