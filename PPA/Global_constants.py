@@ -47,7 +47,7 @@ EPISODE_LENGTH = None
 
 # Directory Paths:
 # Set of Training Encounters.
-TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
+TRAINING_SET = 'PPA/Training Encounters/Test_Encounter_Geometries.csv'
 # Directory where each encounter description/trajectory will be placed.
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 
