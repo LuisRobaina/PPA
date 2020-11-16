@@ -1,5 +1,5 @@
 init:
-	pip install -r requirements.txt
+	pip3 install -r requirements.txt
 train-model:
 	python3 -m PPA.PPA_Learn
 test-model:
