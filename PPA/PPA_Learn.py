@@ -126,6 +126,7 @@ def addModelObjects(mcts):
         except KeyError:
             # First state that hashed to this hash key.
             Learned_Model[stateActionQN_hash] = [stateActionQN]
+            states_modeled += 1
 
 def runEncounters():
     """

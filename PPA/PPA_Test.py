@@ -71,7 +71,6 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
                     break
             if not model_has_state:
                 raise KeyError
-        
         except KeyError:
             print('STATE_NOT_MODELED')
             UNKNOWNSTATE_LIST.append(encounter_index)
