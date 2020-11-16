@@ -37,9 +37,9 @@ Refer to MCTS.py for more details.
 MCTS_ITERATIONS = 10000
 # Every MCTS_CUT iterations try to construct a trajectory. If it is successful then move to the next training encounter.
 # If a cut is not desired set MCTS_CUT = 1. Then every MCTS will go for MCTS_ITERATIONS.
-MCTS_CUT = 1000
+MCTS_CUT = 5000
 
-UCB1_C = 3                      # UCB1 Exploration term.
+UCB1_C = 2                      # UCB1 Exploration term.
 GAMMA = 0.9                     # Discount Factor.
 
 # Max number of actions that can be taken when simulating for Performance.
@@ -47,7 +47,7 @@ EPISODE_LENGTH = None
 
 # Directory Paths:
 # Set of Training Encounters.
-TRAINING_SET = 'PPA/Training Encounters/Test_Encounter_Geometries.csv'
+TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
 # Directory where each encounter description/trajectory will be placed.
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 

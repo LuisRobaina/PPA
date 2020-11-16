@@ -1,6 +1,6 @@
-numpy==1.16.2
+numpy
 sklearn
-pandas==0.25.1
+pandas
 pickle-mixin
 matplotlib
 plotly
