@@ -3,8 +3,8 @@ import os
 # Algorithm's Constants:
 # Refer to README for more details about rewards/penalties.
 
-TIME_INCREMENT = 5.0            # Seconds that each action will runs for (During training)
-TEST_TIME_INCREMENT = 5.0       # Seconds that each action will run for (During testing)
+TIME_INCREMENT = 10.0            # Seconds that each action will runs for (During training)
+TEST_TIME_INCREMENT = 10.0       # Seconds that each action will run for (During testing)
 
 DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 
@@ -39,7 +39,7 @@ MCTS_ITERATIONS = 10000
 # If a cut is not desired set MCTS_CUT = 1. Then every MCTS will go for MCTS_ITERATIONS.
 MCTS_CUT = 5000
 
-UCB1_C = 2                      # UCB1 Exploration term.
+UCB1_C = 3                      # UCB1 Exploration term.
 GAMMA = 0.9                     # Discount Factor.
 
 # Max number of actions that can be taken when simulating for Performance.
