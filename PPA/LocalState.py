@@ -56,10 +56,16 @@ def convertAbsToLocal(absolute_encounter):
     distance_ownship_destination = LA.norm(dest_ownship_vector)     # distance to the destination at [0,0].
 
     # atan2(y,x).
-    theta_destintation_ownship = math.degrees(math.atan2(dest_ownship_vector[1], dest_ownship_vector[0]))
-    
+    theta_destintation_ownship_abs = math.degrees(math.atan2(dest_ownship_vector[0], dest_ownship_vector[1]))
     psi_o = math.degrees(math.atan2(ownship_vel[0], ownship_vel[1]))    # ownship vel w.r.t y axis.
-     
+    
+    # Convert the angle to angle between dest_ownship_vector and ownship_vel.
+    theta_destintation_ownship = theta_destintation_ownship_abs - psi_o
+    if theta_destintation_ownship > 180:
+        theta_destintation_ownship = theta_destintation_ownship - 360
+    elif theta_destintation_ownship <= -180:
+        theta_destintation_ownship = theta_destintation_ownship + 360
+
     speed_destination_ownship = LA.norm(destination - ownship_vel)      # speed of ownship.
     
     intruder_pos_relative_ownship = intruder_pos - ownship_pos
