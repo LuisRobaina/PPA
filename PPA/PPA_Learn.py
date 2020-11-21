@@ -269,7 +269,6 @@ if __name__ == "__main__":
         ********************************************************************
     '''
     print(info_str)
-    input("PRESS ENTER TO RUN...")
     # Train using the training examples.
     runEncounters()
 
