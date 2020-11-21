@@ -16,8 +16,6 @@ info_str = f'''
         *    SPEED BINS = {SPEED_BINS}              
         *    ANGLE BINS = {ANGLE_BINS}              
         *                                           
-        *    STATE SPACE SIZE = {space_size_str}
-        *
         *            Final State Constants
         *     -------------------------------------
         *     DWC_DIST = {DWC_DIST}
