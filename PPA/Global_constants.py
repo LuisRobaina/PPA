@@ -11,7 +11,7 @@ DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination.
 ABANDON_STATE_REWARD = -0.5     # Negative reward (a penalty) if ownship reaches state too far from destination.
 # We define Lost of Well Clear if the distance between aircraft is less than 2200 ft.
-LODWC_REWARD = -0.8             # Negative reward (penalty) for Lost of Well Clear.
+LODWC_REWARD = -0.5             # Negative reward (penalty) for Lost of Well Clear.
 TURN_ACTION_REWARD = -0.00001   # Negative reward (penalty) for every turn action.
 
 # Final State Constants:
@@ -37,9 +37,9 @@ Refer to MCTS.py for more details.
 MCTS_ITERATIONS = 10000
 # Every MCTS_CUT iterations try to construct a trajectory. If it is successful then move to the next training encounter.
 # If a cut is not desired set MCTS_CUT = 1. Then every MCTS will go for MCTS_ITERATIONS.
-MCTS_CUT = 5000
+MCTS_CUT = 500
 
-UCB1_C = 3                      # UCB1 Exploration term.
+UCB1_C = 2                      # UCB1 Exploration term.
 GAMMA = 0.9                     # Discount Factor.
 
 # Max number of actions that can be taken when simulating for Performance.
@@ -47,7 +47,7 @@ EPISODE_LENGTH = None
 
 # Directory Paths:
 # Set of Training Encounters.
-TRAINING_SET = 'PPA/Training Encounters/Rand_Test_Encounter_Geometries.csv'
+TRAINING_SET = 'PPA/Training Encounters/Test_Encounter_Geometries2.csv'
 # Directory where each encounter description/trajectory will be placed.
 TEST_RESULTS_PATH = os.getcwd() + '/Test Results'
 
