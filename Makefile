@@ -7,6 +7,6 @@ test-model:
 evaluate-set:
 	python3 -m PPA.VerifyTrainingSet
 config:
-	python3 -m PPA.hyper-parameter-log
+	python3 -m PPA.hyper_parameters_log
 
 .PHONY: init train-model test-model
