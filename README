@@ -1,7 +1,7 @@
 ************************************************************************************************************************
                                         Welcome to the Path Planning Algorithm
 
-Providing Detect and Avoid Capabilities with route recapture using Reinforcement Learning via
+Providing Detect and Avoid Capabilities with Route Recapture using Reinforcement Learning via
 the Monte Carlo Tree Search.
 ************************************************************************************************************************
 
@@ -34,11 +34,11 @@ the Monte Carlo Tree Search.
 
     1.2 Configure your hyper-parameters (Refer to PPA/Global_constants.py) to change. Refer to PPA Jupyter Notebook
         for explanation of hyper-parameters.
-
-    1.3 run: make train-model
-
+    1.3 Want to see what training configuration is currently being used ? Run make config.
+        Update PPA/Global_Constants.py if nedeed.
+    
+    1.4 run: make train-model
         You will see the set of hypter-parameters you configured. Example:
-
         *************************PPA TRAINING PARAMETERS********************
         *
         *    # MCTS ITERATIONS = 10000
@@ -70,12 +70,10 @@ the Monte Carlo Tree Search.
         *     TURN_ACTION_REWARD = -1e-05
         *
         ********************************************************************
-
         A file with hyper-parameter information will be created at the end of training for future reference.
 
-    1.4 You will see a folder named Test Results be created by the train-model command.
-    1.5 At the end of training a .pickle file will be generated with all the model information learned from the training.
-
+    1.5 You will see a folder named Test Results be created by the train-model command.
+    1.6 At the end of training a .pickle file will be generated with all the model information learned from the training.
 
 ************************************************************************************************************************
                                                    Testing/Evaluating

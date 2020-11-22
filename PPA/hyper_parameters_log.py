@@ -1,9 +1,15 @@
+"""
+This script will log the set of parameters that are configured to be
+used during training in PPA.Global_constants 
+run make config to exectue this script.
+"""
 from PPA.Global_constants import *
 
 info_str = f'''
         *************************PPA TRAINING PARAMETERS********************
         *                                               
         *    # MCTS ITERATIONS = {MCTS_ITERATIONS}  
+        *    MCTS CUT = {MCTS_CUT}
         *    GAMMA = {GAMMA}                        
         *    EPISODE LENGTH = {EPISODE_LENGTH}      
         *    EXPLORATION FACTOR (C) = {UCB1_C}      

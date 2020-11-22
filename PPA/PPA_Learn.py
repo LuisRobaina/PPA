@@ -238,7 +238,8 @@ if __name__ == "__main__":
     info_str = f'''
         *************************PPA TRAINING PARAMETERS********************
         *                                               
-        *    # MCTS ITERATIONS = {MCTS_ITERATIONS}  
+        *    # MCTS ITERATIONS = {MCTS_ITERATIONS} 
+        *    MCTS CUT = {MCTS_CUT} 
         *    GAMMA = {GAMMA}                        
         *    EPISODE LENGTH = {EPISODE_LENGTH}      
         *    EXPLORATION FACTOR (C) = {UCB1_C}      
