@@ -33,7 +33,7 @@ with open(MODEL_DIR, 'rb') as f:
     # Pickle the 'data' dictionary using the highest protocol available.
     Learned_Model = pickle.load(f)
 
-for states_in_model_list in Learned_Model:
+for states_in_model_list in Learned_Model.values():
     for state_in_model in states_in_model_list:
         D_O_Dbin.append(state_in_model.discrete_state.dis_ownship_destBIN)
         T_D_Obin.append(state_in_model.discrete_state.theta_destintation_ownshipBIN)

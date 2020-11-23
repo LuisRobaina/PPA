@@ -57,20 +57,19 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)        
         # Generate a dummy model object for comparison purposes.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)
-        # hash dummy model object
-        model_lookup_hash = hash(model_lookup)
         try:
-            for d_state in Learned_Model[model_lookup_hash]:
-                print(type(d_state))
-                if d_state == model_lookup: # same discrete local state
-                    action = d_state.getBestAction()
-                    # Log the action taken.
-                    print("TOOK ACTION: ", action)
-                    current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)   
-                    trajectory_states.append(current_state)
-                    model_has_state = True
+            for d_state_list in Learned_Model.values():
+                for d_state in d_state_list:
+                    if d_state == model_lookup: # same discrete local state
+                        action = d_state.getBestAction()
+                        # Log the action taken.
+                        print("TOOK ACTION: ", action)
+                        current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)   
+                        trajectory_states.append(current_state)
+                        model_has_state = True
+                        break
+                if model_has_state:
                     break
-                
             if not model_has_state:
                 raise KeyError
         except KeyError:
