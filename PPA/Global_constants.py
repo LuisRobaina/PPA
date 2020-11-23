@@ -11,15 +11,15 @@ DESTINATION_STATE = [0, 0]      # Coordinates of the destination.
 DESTINATION_STATE_REWARD = 1.0  # Reward for reaching the destination.
 ABANDON_STATE_REWARD = -0.5     # Negative reward (a penalty) if ownship reaches state too far from destination.
 # We define Lost of Well Clear if the distance between aircraft is less than 2200 ft.
-LODWC_REWARD = -0.5             # Negative reward (penalty) for Lost of Well Clear.
+LODWC_REWARD = -0.3             # Negative reward (penalty) for Lost of Well Clear.
 TURN_ACTION_REWARD = -0.00001   # Negative reward (penalty) for every turn action.
 
 # Final State Constants:
 DWC_DIST = 2200                 # (ft) Well Clear distance.
 
-DESTINATION_DIST_ERROR = 200    # (ft) Max distance from the destination which is considered Destination Reached.
+DESTINATION_DIST_ERROR = 100    # (ft) Max distance from the destination which is considered Destination Reached.
 
-ABANDON_STATE_ERROR = 30000     # (ft) Distance which if exceed results in an abandon state.
+ABANDON_STATE_ERROR = 50000     # (ft) Distance which if exceed results in an abandon state.
 
 # Set of actions the ownship can take.
 ACTIONS = {                     # Actions are in degrees per second.
@@ -36,9 +36,9 @@ Refer to MCTS.py for more details.
 MCTS_ITERATIONS = 10000
 # Every MCTS_CUT iterations try to construct a trajectory. If it is successful then move to the next training encounter.
 # If a cut is not desired set MCTS_CUT = 1. Then every MCTS will go for MCTS_ITERATIONS.
-MCTS_CUT = 1000
+MCTS_CUT = 500
 
-UCB1_C = 2                      # UCB1 Exploration term.
+UCB1_C = 1.414                  # UCB1 Exploration term.
 GAMMA = 0.9                     # Discount Factor.
 
 # Max number of actions that can be taken when simulating for Performance.
