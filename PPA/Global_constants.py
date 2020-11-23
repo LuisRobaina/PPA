@@ -19,7 +19,6 @@ DWC_DIST = 2200                 # (ft) Well Clear distance.
 
 DESTINATION_DIST_ERROR = 200    # (ft) Max distance from the destination which is considered Destination Reached.
 
-# Prev value = 51660
 ABANDON_STATE_ERROR = 30000     # (ft) Distance which if exceed results on an abandon state.
 
 # Set of actions the ownship can take.

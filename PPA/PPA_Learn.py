@@ -285,7 +285,10 @@ if __name__ == "__main__":
 
     # Dump all the learned model information to the file.
     pickle.dump(Learned_Model, file)
-
+    
+    for model in Learned_Model:
+        print(model)
+    
     # Save the training hyper-parameters corresponding to this training set for future reference.
     training_config_file_str = f'''Training_Parameters({model_str}).txt'''
     training_config_file = open(training_config_file_str, 'w+')

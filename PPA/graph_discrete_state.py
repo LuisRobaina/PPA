@@ -33,14 +33,15 @@ with open(MODEL_DIR, 'rb') as f:
     # Pickle the 'data' dictionary using the highest protocol available.
     Learned_Model = pickle.load(f)
 
-for state_in_model in Learned_Model:
-    D_O_Dbin.append(state_in_model.discrete_state.dis_ownship_destBIN)
-    T_D_Obin.append(state_in_model.discrete_state.theta_destintation_ownshipBIN)
-    O_Vbin.append(state_in_model.discrete_state.ownship_velBIN)
-    I_Vbin.append(state_in_model.discrete_state.intruder_velBIN)
-    D_I_Obin.append(state_in_model.discrete_state.dis_int_ownBIN)
-    T_I_Obin.append(state_in_model.discrete_state.theta_int_own_trackBIN)
-    A_R_N_Pbin.append(state_in_model.discrete_state.angle_rel_vel_neg_rel_posBIN)
+for states_in_model_list in Learned_Model:
+    for state_in_model in states_in_model_list:
+        D_O_Dbin.append(state_in_model.discrete_state.dis_ownship_destBIN)
+        T_D_Obin.append(state_in_model.discrete_state.theta_destintation_ownshipBIN)
+        O_Vbin.append(state_in_model.discrete_state.ownship_velBIN)
+        I_Vbin.append(state_in_model.discrete_state.intruder_velBIN)
+        D_I_Obin.append(state_in_model.discrete_state.dis_int_ownBIN)
+        T_I_Obin.append(state_in_model.discrete_state.theta_int_own_trackBIN)
+        A_R_N_Pbin.append(state_in_model.discrete_state.angle_rel_vel_neg_rel_posBIN)
 
 # multiple line plot
 plt.plot([x[0]]*len(D_I_Obin), D_O_Dbin, marker='o', markerfacecolor='blue', markersize=12, color='skyblue', linewidth=4)

@@ -61,6 +61,7 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
         model_lookup_hash = hash(model_lookup)
         try:
             for d_state in Learned_Model[model_lookup_hash]:
+                print(type(d_state))
                 if d_state == model_lookup: # same discrete local state
                     action = d_state.getBestAction()
                     # Log the action taken.
@@ -69,6 +70,7 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
                     trajectory_states.append(current_state)
                     model_has_state = True
                     break
+                
             if not model_has_state:
                 raise KeyError
         except KeyError:
@@ -202,7 +204,7 @@ if __name__ == "__main__":
     input("Press Enter to Run...")
 
     # Set of StateActionQN that represent the model.
-    Learned_Model = []
+    Learned_Model = {}
 
     with open(MODEL_DIR, 'rb') as f:
         # Pickle the 'data' dictionary using the highest protocol available.
