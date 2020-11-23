@@ -252,3 +252,9 @@ if __name__ == "__main__":
     ************************************************************************************************
     """
     print(results_str)
+
+    # Save the test report for future reference.
+    test_res_file_str = f'''Test_Result({MODEL_DIR}).txt'''
+    test_res_file = open(test_res_file_str, 'w+')
+    test_res_file.write(results_str)
+

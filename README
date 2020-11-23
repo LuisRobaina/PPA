@@ -1,5 +1,6 @@
 ************************************************************************************************************************
-                                        Welcome to the Path Planning Algorithm
+                            Welcome to the Detect, Avoid, and Recaputre Algorithm (DARA)
+                                previously known as:: Path Planning Algorithm(PPA)
 
 Providing Detect and Avoid Capabilities with Route Recapture using Reinforcement Learning via
 the Monte Carlo Tree Search.
