@@ -12,6 +12,9 @@ from PPA.Global_constants import *
 import pandas as pd
 import csv
 import pickle
+import argparse
+import numpy as np
+from numpy import linalg as LA
 
 # Test performance counters.
 failedTests = 0
@@ -26,6 +29,8 @@ LODWC_LIST = []         # Encounters that resulted in Lost Of Well Clear.
 UNKNOWNSTATE_LIST = []  # Encounters that resulted in an un-modeled state.
 ABANDONSTATE_LIST = []  # Encounters that resulted in an Abandon state.
 
+def states_delta(stateA, stateB):
+    return LA.norm(stateA-stateB)    
 
 def constructPath(initial_state: State, encounter_path, encounter_index):
     """
@@ -52,11 +57,11 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
                                                             distance_discretizer, 
                                                             angle_discretizer, 
                                                             speed_discretizer)
-        
+        smallest_delta = float('inf')
+        closest_d_state = None
+
         # Generate model object.
         model_lookup = StateActionQN(current_discrete_local_state, '', 0)        
-        # Generate a dummy model object for comparison purposes.
-        model_lookup = StateActionQN(current_discrete_local_state, '', 0)
         try:
             for d_state_list in Learned_Model.values():
                 for d_state in d_state_list:
@@ -68,10 +73,24 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
                         trajectory_states.append(current_state)
                         model_has_state = True
                         break
+                    else: # Compute the states delta.
+                        delta = states_delta(d_state.discrete_state.as_numpy(), current_discrete_local_state.as_numpy())   
+                        if delta < smallest_delta:
+                            smallest_delta = delta
+                            closest_d_state = d_state
                 if model_has_state:
                     break
+            
             if not model_has_state:
-                raise KeyError
+                # Use the closest d_state
+                # action = closest_d_state.getBestAction()
+                action = "NO_TURN"
+                # Log the action taken.
+                print("TOOK ACTION: ", action)
+                current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)   
+                trajectory_states.append(current_state)
+
+                #raise KeyError
         except KeyError:
             print('STATE_NOT_MODELED')
             UNKNOWNSTATE_LIST.append(encounter_index)
@@ -137,34 +156,48 @@ if __name__ == "__main__":
     RESULTS_DIR = Path to the directory to store results for each encounter.
     ************************************************************************************************
     """
-    print(options_prompt)
-    ENCOUNTER_DIR = input("ENCOUNTER_DIR: ")
-    while True:
-        try:
-            assert(os.path.exists(ENCOUNTER_DIR))
-            break
-        except AssertionError as e:
-            print("INVALID ENCOUNTER_DIR.")
-            ENCOUNTER_DIR = input("ENCOUNTER_DIR: ")
 
-    MODEL_DIR = input("MODEL_DIR: ")
+    parser = argparse.ArgumentParser(description="")
+    
+    parser.add_argument('-ed', action="store",dest="ENCOUNTER_DIR", default="")
+    parser.add_argument('-md', action="store",dest="MODEL_DIR", default="")
+    parser.add_argument('-rd', action="store",dest="RESULTS_DIR", default="")
+    args = parser.parse_args()
 
-    while True:
-        try:
-            assert(os.path.exists(MODEL_DIR))
-            break
-        except AssertionError as e:
-            print("INVALID MODEL_DIR.")
-            MODEL_DIR = input("MODEL_DIR: ")
+    ENCOUNTER_DIR = args.ENCOUNTER_DIR
+    MODEL_DIR = args.MODEL_DIR
+    RESULTS_DIR = args.RESULTS_DIR
 
-    RESULTS_DIR = input("RESULTS_DIR: ")
-    while True:
-        try:
-            assert(os.path.exists(RESULTS_DIR))
-            break
-        except AssertionError as e:
-            print("INVALID RESULTS_DIR.")
-            RESULTS_DIR = input("RESULTS_DIR: ")
+    if ENCOUNTER_DIR == "" or MODEL_DIR == "" or RESULTS_DIR == "":
+
+        print(options_prompt)
+        ENCOUNTER_DIR = input("ENCOUNTER_DIR: ")
+        while True:
+            try:
+                assert(os.path.exists(ENCOUNTER_DIR))
+                break
+            except AssertionError as e:
+                print("INVALID ENCOUNTER_DIR.")
+                ENCOUNTER_DIR = input("ENCOUNTER_DIR: ")
+
+        MODEL_DIR = input("MODEL_DIR: ")
+
+        while True:
+            try:
+                assert(os.path.exists(MODEL_DIR))
+                break
+            except AssertionError as e:
+                print("INVALID MODEL_DIR.")
+                MODEL_DIR = input("MODEL_DIR: ")
+
+        RESULTS_DIR = input("RESULTS_DIR: ")
+        while True:
+            try:
+                assert(os.path.exists(RESULTS_DIR))
+                break
+            except AssertionError as e:
+                print("INVALID RESULTS_DIR.")
+                RESULTS_DIR = input("RESULTS_DIR: ")
 
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
     ENCOUNTERS_GEOMETRIES = pd.read_csv(ENCOUNTER_DIR, header=0)
@@ -209,7 +242,7 @@ if __name__ == "__main__":
         # Pickle the 'data' dictionary using the highest protocol available.
         Learned_Model = pickle.load(f)
 
-    print("MODEL SIZE: ", len(Learned_Model))
+    #print("MODEL SIZE: ", len(Learned_Model.values()))
 
     for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
