@@ -29,7 +29,8 @@ def learnFromEncounter(encounter_directory, encounter_index):
 
     print("LEARNING FROM ", encounter_directory)
 
-    encounter_state = getInitStateFromEncounter(encounter_directory, encounter_index)
+    encounter_state = getInitStateFromEncounter(
+        encounter_directory, encounter_index)
 
     # Sanity check -- are the two aircraft's initial positions well separated by at least the well clear?
     try:
@@ -74,8 +75,9 @@ def learnFromEncounter(encounter_directory, encounter_index):
         mcts.expansion(selected_state)
         # Simulation
         mcts.simulate()
-    
+
     print("STATES MODELED: ", states_modeled)
+
 
 def addModelObjects(mcts):
     """
@@ -84,7 +86,7 @@ def addModelObjects(mcts):
     :param mcts: The tree with the (state,action,rewards) tuples.
     """
     global states_modeled
-    
+
     # The set of state, action, rewards that agent learned from this encounter's MCTS iterations.
     for state, action, reward in mcts.state_action_reward:
 
@@ -101,7 +103,7 @@ def addModelObjects(mcts):
                                                     speed_discretizer)
         # Generate a discrete model object.
         stateActionQN = StateActionQN(discrete_local_state, action, reward)
-        
+
         # Compute the hash value of this discrete state.
         stateActionQN_hash = hash(StateActionQN)
 
@@ -122,11 +124,12 @@ def addModelObjects(mcts):
             # No identical state found: Append new discrete state to the chain.
             if not state_exists:
                 states_modeled += 1
-                Learned_Model[stateActionQN_hash].append(stateActionQN)     
+                Learned_Model[stateActionQN_hash].append(stateActionQN)
         except KeyError:
             # First state that hashed to this hash key.
             Learned_Model[stateActionQN_hash] = [stateActionQN]
             states_modeled += 1
+
 
 def runEncounters():
     """
@@ -152,23 +155,25 @@ def runEncounters():
 
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
     ENCOUNTERS_GEOMETRIES = pd.read_csv(TRAINING_SET, header=0)
-    
-    NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)     # Count the number of rows in set of encounters.
+
+    # Count the number of rows in set of encounters.
+    NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)
 
     """
         Learn from training set
     """
     for encounter_index in range(NUMBER_OF_ENCOUNTERS):
 
-            # Create a directory for this encounter's description and resulting path after a model test.
-            ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
-            ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
-            os.makedirs(ENCOUNTER_PATH)
-            
-            # Create a .csv file to describe this encounter
-            (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
-            # Learn
-            learnFromEncounter(ENCOUNTER_PATH, encounter_index)
+        # Create a directory for this encounter's description and resulting path after a model test.
+        ENCOUNTER_NAME = f'ENCOUNTER_{encounter_index}'
+        ENCOUNTER_PATH = PATH + '/' + ENCOUNTER_NAME
+        os.makedirs(ENCOUNTER_PATH)
+
+        # Create a .csv file to describe this encounter
+        (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(
+            ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
+        # Learn
+        learnFromEncounter(ENCOUNTER_PATH, encounter_index)
 
 
 def constructPathWhileLearning(initial_state: State):
@@ -179,7 +184,8 @@ def constructPathWhileLearning(initial_state: State):
 
     current_state = initial_state
     # Begin to construct a trajectory
-    while isTerminalState(current_state) == 0:  # A return of 0 means the current state is not final.
+    # A return of 0 means the current state is not final.
+    while isTerminalState(current_state) == 0:
         # Assume this specific state is not modeled in memory yet.
         model_has_state = False
         # Convert to a local state.
@@ -196,16 +202,19 @@ def constructPathWhileLearning(initial_state: State):
         model_lookup_hash = hash(model_lookup)
         try:
             for d_state in Learned_Model[model_lookup_hash]:
-                if d_state == model_lookup: # same discrete local state
+                if d_state == model_lookup:  # same discrete local state
                     action = d_state.getBestAction()
-                    current_state = getNewState(current_state, action, TIME_INCREMENT)
+                    current_state = getNewState(
+                        current_state, action, TIME_INCREMENT)
                     model_has_state = True
                     break
             if not model_has_state:
-                return -1  # Valid trajectory couldn't be constructed: Missing the current state in model.
+                # Valid trajectory couldn't be constructed: Missing the current state in model.
+                return -1
         except KeyError:
-            return -1  # Valid trajectory couldn't be constructed: Missing the current state in model.
-    
+            # Valid trajectory couldn't be constructed: Missing the current state in model.
+            return -1
+
     # loop ends when reaches a final state.
     """
         What final state did the agent reach?
@@ -274,7 +283,8 @@ if __name__ == "__main__":
     runEncounters()
 
     # What percentage of the discrete state space did we cover?
-    print("Final State Space Coverage (%) = ", (len(Learned_Model) / space_size) * 100)
+    print("Final State Space Coverage (%) = ",
+          (len(Learned_Model) / space_size) * 100)
 
     """
     Open a file, where you want to store the model.
@@ -285,10 +295,10 @@ if __name__ == "__main__":
 
     # Dump all the learned model information to the file.
     pickle.dump(Learned_Model, file)
-    
+
     for model in Learned_Model:
         print(model)
-    
+
     # Save the training hyper-parameters corresponding to this training set for future reference.
     training_config_file_str = f'''Training_Parameters({model_str}).txt'''
     training_config_file = open(training_config_file_str, 'w+')
@@ -297,4 +307,3 @@ if __name__ == "__main__":
     # Close the files
     file.close()
     training_config_file.close()
-

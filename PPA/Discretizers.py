@@ -20,7 +20,8 @@ def setUpdiscretizers():
 
     # Generate the range of integer values for features: Defines all values to consider in discretization.
     # Depends on the MAX and MIN values set in Global_constants.py
-    range_distance = (np.array([[x for x in range(MIN_DISTANCE, MAX_DISTANCE + 1)]])).T
+    range_distance = (
+        np.array([[x for x in range(MIN_DISTANCE, MAX_DISTANCE + 1)]])).T
     range_angle = (np.array([[x for x in range(MIN_ANGLE, MAX_ANGLE + 1)]])).T
     range_speed = (np.array([[x for x in range(MIN_SPEED, MAX_SPEED + 1)]])).T
 
@@ -35,9 +36,12 @@ def setUpdiscretizers():
 
     # Generate the discretizer objects using KBinsDiscretizer module.
     # Refer to sklearn KBinsDiscretizers documentation for discretizer types and options.
-    distance_discretizer = KBinsDiscretizer(n_bins=distance_bins, encode='ordinal', strategy='uniform')
-    angle_discretizer = KBinsDiscretizer(n_bins=angle_bins, encode='ordinal', strategy='uniform')
-    speed_discretizer = KBinsDiscretizer(n_bins=speed_bins, encode='ordinal', strategy='uniform')
+    distance_discretizer = KBinsDiscretizer(
+        n_bins=distance_bins, encode='ordinal', strategy='uniform')
+    angle_discretizer = KBinsDiscretizer(
+        n_bins=angle_bins, encode='ordinal', strategy='uniform')
+    speed_discretizer = KBinsDiscretizer(
+        n_bins=speed_bins, encode='ordinal', strategy='uniform')
 
     # Fit the values for each range into bins using the discretization objects.
     distance_discretizer.fit(range_distance)
@@ -77,12 +81,15 @@ def discretizeLocalState(local_state, distance_discretizer, angle_discretizer, s
         local_state.ownship_vel,
         local_state.intruder_vel
     ]
-   
+
     # Discretize features of the local state using the specified discretizers generated in setUpdiscretizers().
     # Returns np.arrays with the bins.
-    distance_bins = distance_discretizer.transform((np.array([LocalStateVectorDistances])).T)
-    angle_bins = angle_discretizer.transform((np.array([LocalStateVectorAngles])).T)
-    speed_bins = speed_discretizer.transform((np.array([LocalStateVectorSpeeds])).T)
+    distance_bins = distance_discretizer.transform(
+        (np.array([LocalStateVectorDistances])).T)
+    angle_bins = angle_discretizer.transform(
+        (np.array([LocalStateVectorAngles])).T)
+    speed_bins = speed_discretizer.transform(
+        (np.array([LocalStateVectorSpeeds])).T)
 
     # distance ownship to destination bin
     d_o_bin = distance_bins.T[0][0]
@@ -100,6 +107,7 @@ def discretizeLocalState(local_state, distance_discretizer, angle_discretizer, s
     i_v_bin = speed_bins.T[0][1]
 
     # Generate the discrete local state object.
-    discreteLocalState = DiscreteLocalState(d_o_bin, d_i_o_bin, t_d_o_bin, t_i_o_bin, a_r_v_p_bin, o_v_bin, i_v_bin)
-    
+    discreteLocalState = DiscreteLocalState(
+        d_o_bin, d_i_o_bin, t_d_o_bin, t_i_o_bin, a_r_v_p_bin, o_v_bin, i_v_bin)
+
     return discreteLocalState

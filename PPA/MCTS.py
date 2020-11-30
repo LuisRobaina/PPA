@@ -19,6 +19,7 @@ class MCST_State:
             3. N: The number of times this node has been selected.
             4. dirty_bit: Whether or not this node was updated on a given iteration of MCTS.
     """
+
     def __init__(self, state: State):
         # State properties
         self.state = state
@@ -73,16 +74,20 @@ class MCST:
     Implementation of the procedures needed to construct a MCTS: Selection, Expansion
     Simulation, and Back-propagation.
     """
+
     def __init__(self, state):
         # Set the MCST initial state.
         self.root = MCST_State(state)
         self.root.N = 1
         # Every iteration there is a sequence of selections that lead to an unknown state to be expanded. Keep track
-        self.visitedStatesPath = [self.root]    # Keep track of (state, action) pairs along the path to a final state.
+        # Keep track of (state, action) pairs along the path to a final state.
+        self.visitedStatesPath = [self.root]
         # Points to the last expanded node on a given iteration.
-        self.lastExpandedState = self.root      # Reference to the last expanded node where simulation starts from.
+        # Reference to the last expanded node where simulation starts from.
+        self.lastExpandedState = self.root
         # Sequence of  stats,action,rewards tuples to be used for the model: Refer to README for more details.
-        self.state_action_reward = []           # List of 3 elements tuples (state,action,reward).
+        # List of 3 elements tuples (state,action,reward).
+        self.state_action_reward = []
 
     def clearStatesPath(self):
         """
@@ -94,11 +99,12 @@ class MCST:
         """
         The best action to take from this node is the one with the most simulations based on UCB1.
         """
-        simulations_count = [self.root.turn_left.N, self.root.no_turn.N, self.root.turn_right.N]
+        simulations_count = [self.root.turn_left.N,
+                             self.root.no_turn.N, self.root.turn_right.N]
         action_type = ['LEFT', 'NO_TURN', 'RIGHT']
         action = action_type[simulations_count.index(max(simulations_count))]
-        
-        return action 
+
+        return action
 
     def selection(self):
         """
@@ -109,21 +115,26 @@ class MCST:
 
         # We only run selection on nodes that have the 3 children expanded.
         # While a given state node has been expanded, select a child using UCB1.
-        while mcst_node.visited_child_count == 3:   # LEFT, NO_TURN and RIGHT child states have been expanded.
+        # LEFT, NO_TURN and RIGHT child states have been expanded.
+        while mcst_node.visited_child_count == 3:
 
             # Exploration term:
             c = UCB1_C
 
             # Explore or exploit? UCB1 formula.
-            UCB1_left = mcst_node.turn_left.Q + c * math.sqrt((math.log(mcst_node.N) / mcst_node.turn_left.N))
+            UCB1_left = mcst_node.turn_left.Q + c * \
+                math.sqrt((math.log(mcst_node.N) / mcst_node.turn_left.N))
 
-            UCB1_right = mcst_node.turn_right.Q + c * math.sqrt((math.log(mcst_node.N) / mcst_node.turn_right.N))
+            UCB1_right = mcst_node.turn_right.Q + c * \
+                math.sqrt((math.log(mcst_node.N) / mcst_node.turn_right.N))
 
-            UCB1_no_turn = mcst_node.no_turn.Q + c * math.sqrt((math.log(mcst_node.N) / mcst_node.no_turn.N))
+            UCB1_no_turn = mcst_node.no_turn.Q + c * \
+                math.sqrt((math.log(mcst_node.N) / mcst_node.no_turn.N))
 
             values = [UCB1_no_turn, UCB1_left, UCB1_right]
-            
-            nextChildIndex = values.index(max(UCB1_no_turn, UCB1_left, UCB1_right))
+
+            nextChildIndex = values.index(
+                max(UCB1_no_turn, UCB1_left, UCB1_right))
 
             if nextChildIndex is 0:
                 # Select no_turn child.
@@ -140,7 +151,7 @@ class MCST:
 
         # Return a selected node that does not have all 3 children node expanded: Used for expansion().
         return mcst_node
-    
+
     def expansion(self, mcst_node):
         """
         Randomly pick a non expanded child node to run simulation on.
@@ -151,24 +162,27 @@ class MCST:
         while True:     # Randomly pick a non expanded node.
             rand_num = random.random()
             if rand_num < 0.33 and mcst_node.no_turn is None:
-                # Expand to the no_turn state.                              
-                new_state = getNewState(mcst_node.state, 'NO_TURN', TIME_INCREMENT)
+                # Expand to the no_turn state.
+                new_state = getNewState(
+                    mcst_node.state, 'NO_TURN', TIME_INCREMENT)
                 mcst_node.no_turn = MCST_State(new_state)
-                self.lastExpandedState = mcst_node.no_turn                     
+                self.lastExpandedState = mcst_node.no_turn
                 break
             elif rand_num < 0.66 and mcst_node.turn_left is None:
                 # Expand to the turn_left state.
-                new_state = getNewState(mcst_node.state, 'LEFT', TIME_INCREMENT)
+                new_state = getNewState(
+                    mcst_node.state, 'LEFT', TIME_INCREMENT)
                 mcst_node.turn_left = MCST_State(new_state)
-                self.lastExpandedState = mcst_node.turn_left     
+                self.lastExpandedState = mcst_node.turn_left
                 break
             elif rand_num < 0.99 and mcst_node.turn_right is None:
                 # Expand to the turn_right state.
-                new_state = getNewState(mcst_node.state, 'RIGHT', TIME_INCREMENT)
+                new_state = getNewState(
+                    mcst_node.state, 'RIGHT', TIME_INCREMENT)
                 mcst_node.turn_right = MCST_State(new_state)
                 self.lastExpandedState = mcst_node.turn_right
                 break
-                
+
         mcst_node.visited_child_count += 1
 
     def simulate(self):
@@ -205,7 +219,8 @@ class MCST:
 
             # Check if this state is final.
             state_Q = isTerminalState(simState)
-            if state_Q is not 0:    # Non-zero means simState is terminal (refer to isTerminalState).
+            # Non-zero means simState is terminal (refer to isTerminalState).
+            if state_Q is not 0:
                 # Compute Reward/Score and back-propagate.
                 Q += state_Q
                 break   # End simulation.

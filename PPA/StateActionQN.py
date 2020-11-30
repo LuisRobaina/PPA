@@ -12,6 +12,7 @@ class StateActionQN:
     The model is created during training with PPA_Learn.py and loaded
     during testing with PPA_Test.py
     """
+
     def __init__(self, d_state: DiscreteLocalState, action, Q):
         # Discrete State to be modeled by this object.
         self.discrete_state = d_state
@@ -29,7 +30,7 @@ class StateActionQN:
 
         # Initial call to update the Q value of an action.
         self.update(action, Q)
-    
+
     def getBestAction(self):
         """
         Returns the action with the highest expected reward.
@@ -37,10 +38,10 @@ class StateActionQN:
         actions = ['LEFT', 'NO_TURN', 'RIGHT']
         # The set of Q values for the actions.
         actionsQ = [self.LEFT_Q, self.NO_TURN_Q, self.RIGHT_Q]
-        
+
         action = actions[actionsQ.index(max(actionsQ))]
         return action
-    
+
     def update(self, action: str, New_Q):
         """
             Update our knowledge of this action
@@ -48,14 +49,14 @@ class StateActionQN:
             Q value.
         """
         if action is '':
-            return  
-        
+            return
+
         if action is "LEFT":
-            
+
             if self.LEFT_N == 0:
                 # First Q value for this action.
                 self.LEFT_Q = New_Q
-        
+
             else:   # Average.
                 current_avg = self.LEFT_Q
                 new_avg = current_avg + ((New_Q - current_avg)/(self.LEFT_N+1))
@@ -69,10 +70,11 @@ class StateActionQN:
             if self.RIGHT_N == 0:
                 # First Q value for this action.
                 self.RIGHT_Q = New_Q
-                
+
             else:   # Average.
                 current_avg = self.RIGHT_Q
-                new_avg = current_avg + ((New_Q - current_avg)/(self.RIGHT_N+1))
+                new_avg = current_avg + \
+                    ((New_Q - current_avg)/(self.RIGHT_N+1))
                 self.RIGHT_Q = new_avg
 
             # Update number of visits to this action.
@@ -83,10 +85,11 @@ class StateActionQN:
             if self.NO_TURN_N == 0:
                 # First Q value for this action.
                 self.NO_TURN_Q = New_Q
-                
+
             else:   # Average.
                 current_avg = self.NO_TURN_Q
-                new_avg = current_avg + ((New_Q - current_avg)/(self.NO_TURN_N+1))
+                new_avg = current_avg + \
+                    ((New_Q - current_avg)/(self.NO_TURN_N+1))
                 self.NO_TURN_Q = new_avg
 
             # Update number of visits to this action.
@@ -102,6 +105,6 @@ class StateActionQN:
 
     def __hash__(self):
         return hash(self.discrete_state)
-        
+
     def __eq__(self, obj):
         return isinstance(obj, StateActionQN) and obj.discrete_state == self.discrete_state

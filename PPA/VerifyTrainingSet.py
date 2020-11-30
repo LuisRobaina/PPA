@@ -3,6 +3,7 @@ from PPA.Global_constants import *
 
 LODWC_ENCOUNTERS = 0
 
+
 def evaluateEncounters(SET):
 
     global PATH, TRAINING, LODWC_ENCOUNTERS
@@ -30,7 +31,8 @@ def evaluateEncounters(SET):
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
     ENCOUNTERS_GEOMETRIES = pd.read_csv(SET, header=0)
 
-    NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)  # Count the number of rows in set of encounters.
+    # Count the number of rows in set of encounters.
+    NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)
 
     """
         Learn from training set
@@ -43,9 +45,11 @@ def evaluateEncounters(SET):
         os.makedirs(ENCOUNTER_PATH)
 
         # Create a .csv file to describe this encounter
-        (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
+        (ENCOUNTERS_GEOMETRIES.iloc[encounter_index]).to_csv(
+            ENCOUNTER_PATH + '/desc.csv', index=False, header=False)
         # Learn
-        encounter_state = getInitStateFromEncounter(ENCOUNTER_PATH, encounter_index)
+        encounter_state = getInitStateFromEncounter(
+            ENCOUNTER_PATH, encounter_index)
         # Sanity check -- are the two aircraft's initial positions well separated by at least the well clear?
         try:
             assert (encounter_state.get_distance() >= DWC_DIST)
@@ -56,6 +60,7 @@ def evaluateEncounters(SET):
                     '''
             print(log_str)
             LODWC_ENCOUNTERS += 1
+
 
 """
 Main method: User prompts.

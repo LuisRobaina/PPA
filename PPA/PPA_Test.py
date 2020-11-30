@@ -29,9 +29,11 @@ LODWC_LIST = []         # Encounters that resulted in Lost Of Well Clear.
 UNKNOWNSTATE_LIST = []  # Encounters that resulted in an un-modeled state.
 ABANDONSTATE_LIST = []  # Encounters that resulted in an Abandon state.
 
+
 def states_delta(stateA, stateB):
     """Compute the magnitud of the vector difference between to discrete states"""
-    return LA.norm(stateA-stateB)    
+    return LA.norm(stateA-stateB)
+
 
 def constructPath(initial_state: State, encounter_path, encounter_index):
     """
@@ -53,35 +55,37 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
         model_has_state = False
 
         current_local_state = convertAbsToLocal(current_state)
-    
-        current_discrete_local_state = discretizeLocalState(current_local_state, 
-                                                            distance_discretizer, 
-                                                            angle_discretizer, 
+
+        current_discrete_local_state = discretizeLocalState(current_local_state,
+                                                            distance_discretizer,
+                                                            angle_discretizer,
                                                             speed_discretizer)
         smallest_delta = float('inf')
         closest_d_state = None
 
         # Generate model object.
-        model_lookup = StateActionQN(current_discrete_local_state, '', 0)        
+        model_lookup = StateActionQN(current_discrete_local_state, '', 0)
         try:
             for d_state_list in Learned_Model.values():
                 for d_state in d_state_list:
-                    if d_state == model_lookup: # same discrete local state
+                    if d_state == model_lookup:  # same discrete local state
                         action = d_state.getBestAction()
                         # Log the action taken.
                         print("TOOK ACTION: ", action)
-                        current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)   
+                        current_state = getNewState(
+                            current_state, action, TEST_TIME_INCREMENT)
                         trajectory_states.append(current_state)
                         model_has_state = True
                         break
-                    else: # Compute the states delta.
-                        delta = states_delta(d_state.discrete_state.as_numpy(), current_discrete_local_state.as_numpy())   
+                    else:  # Compute the states delta.
+                        delta = states_delta(d_state.discrete_state.as_numpy(
+                        ), current_discrete_local_state.as_numpy())
                         if delta < smallest_delta:
                             smallest_delta = delta
                             closest_d_state = d_state
                 if model_has_state:
                     break
-            
+
             if not model_has_state:
                 """ 
                     The following commented block of code forces the agent
@@ -90,9 +94,9 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
                 # action = "NO_TURN"
                 # Log the action taken.
                 # print("TOOK ACTION: ", action)
-                #current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)   
+                #current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)
                 # trajectory_states.append(current_state)
-                
+
                 """Otherwise, just rise an error"""
                 raise KeyError
         except KeyError:
@@ -101,7 +105,7 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
             UnknownStateCount += 1
             writeTraj(encounter_path, trajectory_states)
             return -1   # Path couldn't be constructed missing states in model.
-                
+
     # What final state did we reach?
     """
         Possible final states return values: 
@@ -123,7 +127,7 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
             print('ABANDON_STATE')
 
         elif reward == LODWC_REWARD:
-            LODWCCount +=1
+            LODWCCount += 1
             LODWC_LIST.append(encounter_index)
             print('LODWC')
         return -1   # Failed path.
@@ -161,10 +165,11 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(description="")
-    
-    parser.add_argument('-ed', action="store",dest="ENCOUNTER_DIR", default="")
-    parser.add_argument('-md', action="store",dest="MODEL_DIR", default="")
-    parser.add_argument('-rd', action="store",dest="RESULTS_DIR", default="")
+
+    parser.add_argument('-ed', action="store",
+                        dest="ENCOUNTER_DIR", default="")
+    parser.add_argument('-md', action="store", dest="MODEL_DIR", default="")
+    parser.add_argument('-rd', action="store", dest="RESULTS_DIR", default="")
     args = parser.parse_args()
 
     ENCOUNTER_DIR = args.ENCOUNTER_DIR
@@ -204,7 +209,8 @@ if __name__ == "__main__":
 
     # Header set to 0 because Test_Encounter_Geometries.csv contains headers on first row.
     ENCOUNTERS_GEOMETRIES = pd.read_csv(ENCOUNTER_DIR, header=0)
-    NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)  # Count the number of rows in set of encounters.
+    # Count the number of rows in set of encounters.
+    NUMBER_OF_ENCOUNTERS = len(ENCOUNTERS_GEOMETRIES.index)
 
     # Retrieve discretizers:
     distance_discretizer, angle_discretizer, speed_discretizer, space_size = setUpdiscretizers()
@@ -287,9 +293,8 @@ if __name__ == "__main__":
     ************************************************************************************************
     """
     print(results_str)
-    
+
     # Save the test report for future reference.
     test_res_file_str = f'''Test_Result({MODEL_DIR}).txt'''
     test_res_file = open(test_res_file_str, 'w+')
     test_res_file.write(results_str)
-
