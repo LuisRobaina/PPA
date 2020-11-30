@@ -1,3 +1,6 @@
+import numpy as np
+from PPA.Global_constants import *
+
 class DiscreteLocalState:
     """
         Represents a local state after discretization.
@@ -23,6 +26,16 @@ class DiscreteLocalState:
         self.theta_int_own_trackBIN = t_i_o_bin
         self.angle_rel_vel_neg_rel_posBIN = a_r_v_p_bin
 
+    def as_numpy(self):
+        ""
+        return np.array([self.dis_ownship_destBIN,
+                        self.theta_destintation_ownshipBIN,
+                        self.ownship_velBIN,
+                        self.intruder_velBIN,
+                        self.dis_int_ownBIN,
+                        self.theta_int_own_trackBIN,
+                        self.angle_rel_vel_neg_rel_posBIN 
+                        ])
     def __str__(self):
         """
             A string representation of this discrete state.
@@ -52,6 +65,7 @@ class DiscreteLocalState:
             Two discrete states are the same if they share all bins for discrete
             features.
         """
+
         if not isinstance(obj, DiscreteLocalState):
             return False
         if self.dis_ownship_destBIN != obj.dis_ownship_destBIN:
@@ -71,3 +85,4 @@ class DiscreteLocalState:
 
         # Discrete states are the same
         return True
+
