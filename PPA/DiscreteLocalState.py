@@ -1,4 +1,5 @@
 import numpy as np
+from PPA.Global_constants import *
 
 class DiscreteLocalState:
     """
@@ -64,38 +65,24 @@ class DiscreteLocalState:
             Two discrete states are the same if they share all bins for discrete
             features.
         """
-        #equal = True
 
         if not isinstance(obj, DiscreteLocalState):
             return False
         if self.dis_ownship_destBIN != obj.dis_ownship_destBIN:
-            #equal = False
-            #print("dis_ownship_dest")
             return False
         if self.theta_destintation_ownshipBIN != obj.theta_destintation_ownshipBIN:
-            #equal = False
-            #print("theta_destination_ownship") 
             return False
         if self.ownship_velBIN != obj.ownship_velBIN:
-            #equal = False
-            #print("ownship_vel")
             return False
         if self.intruder_velBIN != obj.intruder_velBIN:
-            #equal = False
-            #print("intruder_vel")
             return False
         if self.dis_int_ownBIN != obj.dis_int_ownBIN:
-            #equal = False
-            #print("dis_int_own")
             return False
         if self.theta_int_own_trackBIN != obj.theta_int_own_trackBIN:
-            #equal = False
-            #print("theta_int_own_track")
             return False
         if self.angle_rel_vel_neg_rel_posBIN != obj.angle_rel_vel_neg_rel_posBIN:
-            #equal = False
-            #print("angle_vel_neg_rel_pos")
             return False
-        
+
         # Discrete states are the same
         return True
+

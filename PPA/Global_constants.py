@@ -17,7 +17,7 @@ TURN_ACTION_REWARD = -0.00001   # Negative reward (penalty) for every turn actio
 # Final State Constants:
 DWC_DIST = 2200                 # (ft) Well Clear distance.
 
-DESTINATION_DIST_ERROR = 100    # (ft) Max distance from the destination which is considered Destination Reached.
+DESTINATION_DIST_ERROR = 500    # (ft) Max distance from the destination which is considered Destination Reached.
 
 ABANDON_STATE_ERROR = 50000     # (ft) Distance which if exceed results in an abandon state.
 
@@ -33,12 +33,12 @@ Maximum number of MCTS iterations that can run for a given encounter.
 Each iteration of MCTS includes: selection, expansion, simulation.
 Refer to MCTS.py for more details.
 """
-MCTS_ITERATIONS = 0
+MCTS_ITERATIONS = 10000
 # Every MCTS_CUT iterations try to construct a trajectory. If it is successful then move to the next training encounter.
 # If a cut is not desired set MCTS_CUT = 1. Then every MCTS will go for MCTS_ITERATIONS.
 MCTS_CUT = 500
 
-UCB1_C = 1.414                  # UCB1 Exploration term.
+UCB1_C = 3                      # UCB1 Exploration term.
 GAMMA = 0.9                     # Discount Factor.
 
 # Max number of actions that can be taken when simulating for Performance.
@@ -68,6 +68,6 @@ MAX_ANGLE = 180               # (deg).
 The number of bins used for every feature type directly influences the performance of the algorithm
 both in training time (larger state space) and quality of maneuvers.
 """
-DISTANCE_BINS = 60 # 121
+DISTANCE_BINS = 60  # 121
 ANGLE_BINS = 36     # 72
 SPEED_BINS = 20     # 57

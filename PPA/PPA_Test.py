@@ -30,6 +30,7 @@ UNKNOWNSTATE_LIST = []  # Encounters that resulted in an un-modeled state.
 ABANDONSTATE_LIST = []  # Encounters that resulted in an Abandon state.
 
 def states_delta(stateA, stateB):
+    """Compute the magnitud of the vector difference between to discrete states"""
     return LA.norm(stateA-stateB)    
 
 def constructPath(initial_state: State, encounter_path, encounter_index):
@@ -82,15 +83,18 @@ def constructPath(initial_state: State, encounter_path, encounter_index):
                     break
             
             if not model_has_state:
-                # Use the closest d_state
-                # action = closest_d_state.getBestAction()
-                action = "NO_TURN"
+                """ 
+                    The following commented block of code forces the agent
+                    to go straight if it doesn't have the current state modeled
+                """
+                # action = "NO_TURN"
                 # Log the action taken.
-                print("TOOK ACTION: ", action)
-                current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)   
-                trajectory_states.append(current_state)
-
-                #raise KeyError
+                # print("TOOK ACTION: ", action)
+                #current_state = getNewState(current_state, action, TEST_TIME_INCREMENT)   
+                # trajectory_states.append(current_state)
+                
+                """Otherwise, just rise an error"""
+                raise KeyError
         except KeyError:
             print('STATE_NOT_MODELED')
             UNKNOWNSTATE_LIST.append(encounter_index)
@@ -129,7 +133,6 @@ def writeTraj(encounter_path, trajectory_states):
     """
     Save the coordinates of each time on a trajectory to a csv file.
     """
-
     with open(encounter_path + "/" + "Trajectory.csv", 'w', ) as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['O_X', 'O_Y', 'I_X', 'I_Y'])
@@ -256,12 +259,11 @@ if __name__ == "__main__":
 
         if outcome == -1:  # Failed Path.
             failedTests += 1
-            print("FAILED: ", ENCOUNTER_NAME)
-
+            print("FAILED TRAJ")
         if outcome == 0:  # Success Path:
-            print("SUCCESS: ", ENCOUNTER_NAME)
             SUCCESS_LIST.append(encounter_index)
             passedTests += 1
+            print("SUCCESS")
 
     # Log Results.
     results_str = f"""
@@ -285,7 +287,7 @@ if __name__ == "__main__":
     ************************************************************************************************
     """
     print(results_str)
-
+    
     # Save the test report for future reference.
     test_res_file_str = f'''Test_Result({MODEL_DIR}).txt'''
     test_res_file = open(test_res_file_str, 'w+')
