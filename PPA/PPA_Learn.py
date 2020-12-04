@@ -54,7 +54,7 @@ def learnFromEncounter(encounter_directory, encounter_index):
     for i in range(MCTS_ITERATIONS):
 
         # Try to construct path every MCTS_CUT iterations of MCTS: avoid over-fitting and smaller training time.
-        if i % MCTS_CUT == 0:
+        if i != 0 and i % MCTS_CUT == 0:
             # Empty the set of (state, action, reward):
             mcts.state_action_reward = []
             # Get State,Action,Rewards for states that updated in the last 1000 iterations.
@@ -210,9 +210,11 @@ def constructPathWhileLearning(initial_state: State):
                     break
             if not model_has_state:
                 # Valid trajectory couldn't be constructed: Missing the current state in model.
+                learn_at_cut(current_state)
                 return -1
         except KeyError:
             # Valid trajectory couldn't be constructed: Missing the current state in model.
+            learn_at_cut(current_state)
             return -1
 
     # loop ends when reaches a final state.
@@ -237,6 +239,23 @@ def constructPathWhileLearning(initial_state: State):
         return -1  # Failed: A valid trajectory couldn't be constructed.
 
 
+def learn_at_cut(state):
+    global states_modeled
+   
+    mcts = MCST(state)
+    """
+        Run Monte Carlo Tree Search.
+    """
+    for _ in range(MCTS_CUT_ITERATIONS):
+        # Selection
+        selected_state = mcts.selection()
+        # Expansion
+        mcts.expansion(selected_state)
+        # Simulation
+        mcts.simulate()
+    
+    mcts.getStateActionRewards(mcts.root)
+    addModelObjects(mcts)
 """
 Main method.
 """
